@@ -48,12 +48,14 @@ Each feature listed below is a tag you may use to import with.
     croak "Could not find library" unless $lib;
     Affix::load_library($_) or die "Could not find $_" for $lib, @etc;
     our ( %EXPORT_TAGS, @EXPORT_OK );
+    my $main_hook;
 
     sub import ( $pkg, @wants ) {
         {
             no strict 'refs';
             (s[^:][_]r)->() for @wants;
         }
+        $main_hook //= caller if grep { $_ eq ':main' } @wants;
         #
         require List::Util;
         @EXPORT_OK = sort map {@$_} values %EXPORT_TAGS;
@@ -3260,7 +3262,14 @@ when a message belongs to that category, it will only be sent out if it has that
 
 =head3 :main
 
-Redefine main() if necessary so that it is called by SDL.
+This is a special import tag that informs SDL to use its new callback based App system.
+
+You B<must> define L<SDL_AppInit|https://wiki.libsdl.org/SDL3/SDL_AppInit>,
+L<SDL_AppEvent|https://wiki.libsdl.org/SDL3/SDL_AppEvent>,
+L<SDL_AppIterate|https://wiki.libsdl.org/SDL3/SDL_AppIterate>, and
+L<SDL_AppQuit|https://wiki.libsdl.org/SDL3/SDL_AppQuit> in your code.
+
+See F<eg/hello_world.pl> for an example and L<SDL3: CategoryMain|https://wiki.libsdl.org/SDL3/CategoryMain>.
 
 =cut
 
@@ -3272,15 +3281,9 @@ Redefine main() if necessary so that it is called by SDL.
         _platform_defines();
         _stdinc();
         #
-        # Defined within #ifdef SDL_MAIN_USE_CALLBACKS, but exported as symbols
-        _affix_and_export SDL_AppInit    => [ Pointer [ Pointer [Void] ], Int, Pointer [String] ], SDL_AppResult();
-        _affix_and_export SDL_AppIterate => [ Pointer [Void] ], SDL_AppResult();
-        _affix_and_export SDL_AppEvent   => [ Pointer [Void], Pointer [ SDL_Event() ] ], SDL_AppResult();
-        _affix_and_export SDL_AppQuit    => [ Pointer [Void], SDL_AppResult() ], Void;
         _typedef_and_export SDL_main_func => Callback [ [ Int, Pointer [String] ] => Int ];
-        _affix_and_export SDL_main         => [ Int, Pointer [String] ], Int;
         _affix_and_export SDL_SetMainReady => [], Void;
-        _affix_and_export SDL_RunApp       => [ Int, Pointer [String], SDL_main_func(), Pointer [Void] ], Int;
+        _affix_and_export SDL_RunApp => [ Int, Pointer [String], SDL_main_func(), Pointer [Void] ], Int;
         _affix_and_export
             SDL_EnterAppMainCallbacks =>
             [ Int, Pointer [String], SDL_AppInit_func(), SDL_AppIterate_func(), SDL_AppEvent_func(), SDL_AppQuit_func() ],
@@ -5497,7 +5500,8 @@ See L<SDL3: CategoryVideo|https://wiki.libsdl.org/SDL3/CategoryVideo>
             'SDL_ORIENTATION_UNKNOWN', 'SDL_ORIENTATION_LANDSCAPE', 'SDL_ORIENTATION_LANDSCAPE_FLIPPED', 'SDL_ORIENTATION_PORTRAIT',
             'SDL_ORIENTATION_PORTRAIT_FLIPPED'
         ];
-        _typedef_and_export 'SDL_Window' => Pointer [Void];
+        _typedef_and_export SDL_Window => Void;    # opaque
+
         #
         _typedef_and_export SDL_WindowFlags => UInt64;
         _const_and_export SDL_WINDOW_FULLSCREEN          => 0x0000000000000001;
@@ -5852,6 +5856,16 @@ Functions for creating Vulkan surfaces on SDL windows.
         _affix_and_export 'SDL_Vulkan_CreateSurface',            [ SDL_Window(), VkInstance(), VkAllocationCallbacks(), VkSurfaceKHR() ] => Bool;
         _affix_and_export 'SDL_Vulkan_DestroySurface',           [ VkInstance(), VkSurfaceKHR(), VkAllocationCallbacks() ]               => Void;
         _affix_and_export 'SDL_Vulkan_GetPresentationSupport',   [ VkInstance(), VkPhysicalDevice(), UInt32 ]                            => Bool;
+    }
+
+    END {    # For :main
+        return if $? != 0;    # We are crashing or exiting with error; do not run hooks.
+        $main_hook // return;
+        my $SDL_AppInit    = $main_hook->can('SDL_AppInit')    // sub { SDL_Log('Missing SDL_AppInit callback for :main');    SDL_APP_FAILURE() };
+        my $SDL_AppEvent   = $main_hook->can('SDL_AppEvent')   // sub { SDL_Log('Missing SDL_AppEvent callback for :main');   SDL_APP_FAILURE() };
+        my $SDL_AppIterate = $main_hook->can('SDL_AppIterate') // sub { SDL_Log('Missing SDL_AppIterate callback for :main'); SDL_APP_FAILURE() };
+        my $SDL_AppQuit    = $main_hook->can('SDL_AppQuit')    // sub { SDL_Log('Missing SDL_AppQuit callback for :main');    SDL_APP_FAILURE() };
+        SDL_EnterAppMainCallbacks( scalar(@ARGV), \@ARGV, $SDL_AppInit, $SDL_AppIterate, $SDL_AppEvent, $SDL_AppQuit );
     }
 }
 1;

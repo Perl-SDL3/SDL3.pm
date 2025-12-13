@@ -153,7 +153,10 @@ when a message belongs to that category, it will only be sent out if it has that
 
 This is a special import tag that informs SDL to use its new callback based App system.
 
-You **must** define [SDL\_AppInit](https://wiki.libsdl.org/SDL3/SDL_AppInit), [SDL\_AppEvent](https://wiki.libsdl.org/SDL3/SDL_AppEvent), [SDL\_AppIterate](https://wiki.libsdl.org/SDL3/SDL_AppIterate), and [SDL\_AppQuit](https://wiki.libsdl.org/SDL3/SDL_AppQuit) in your code.
+You **must** define [SDL\_AppInit](https://wiki.libsdl.org/SDL3/SDL_AppInit),
+[SDL\_AppEvent](https://wiki.libsdl.org/SDL3/SDL_AppEvent),
+[SDL\_AppIterate](https://wiki.libsdl.org/SDL3/SDL_AppIterate), and
+[SDL\_AppQuit](https://wiki.libsdl.org/SDL3/SDL_AppQuit) in your code.
 
 See `eg/hello_world.pl` for an example and [SDL3: CategoryMain](https://wiki.libsdl.org/SDL3/CategoryMain).
 

@@ -32,7 +32,7 @@ MYMETA.*
 temp/
 t/dev/
 
-eg/*.pl
+#eg/*.pl
 eg/lib/*.pm
 
 *.session
