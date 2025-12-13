@@ -1,4 +1,4 @@
-requires 'Affix',       'v0.12.0';
+requires 'Affix',       'v1.0.0';
 requires 'Alien::SDL3', 'v2.24.0';
 requires 'Carp';
 requires 'Data::Dump';
@@ -18,7 +18,7 @@ on configure => sub {
     requires 'Path::Tiny',   '0.144';
 };
 on build => sub {
-    requires 'Affix',       'v0.12.0';
+    requires 'Affix',       'v1.0.0';
     requires 'Alien::SDL3', 'v2.24.0';
 };
 on test => sub {

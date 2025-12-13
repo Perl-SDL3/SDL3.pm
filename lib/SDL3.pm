@@ -5220,7 +5220,7 @@ system, adding platform-specific polish to an app, or solving problems that only
         }
 
         # ifdef SDL_PLATFORM_IOS
-        if ( $^O eq 'darwin' ) {    # Approximation for iOS in Perl
+        if ( $^O eq 'darwin' && 0 ) {    # Perl on iOS? Yeah, right...
             _typedef_and_export SDL_iOSAnimationCallback => Callback [ [ Pointer [Void] ] => Void ];
             _affix_and_export
                 SDL_SetiOSAnimationCallback => [ Pointer [ SDL_Window() ], Int, SDL_iOSAnimationCallback(), Pointer [Void] ],
@@ -5264,7 +5264,7 @@ system, adding platform-specific polish to an app, or solving problems that only
         _affix_and_export SDL_OnApplicationDidEnterForeground      => [], Void;
 
         # ifdef SDL_PLATFORM_IOS
-        if ( $^O eq 'darwin' ) {
+        if ( $^O eq 'darwin' && 0 ) {
             _affix_and_export SDL_OnApplicationDidChangeStatusBarOrientation => [], Void;
         }
 
@@ -5502,6 +5502,8 @@ register a callback that is fired when the user clicks on these pieces.
 Functionality to query the current SDL version, both as headers the app was compiled against, and a library the app is
 linked to.
 
+See L<SDL3: CategoryVersion|https://wiki.libsdl.org/SDL3/CategoryVersion>
+
 =cut
 
     sub _version() {
@@ -5509,16 +5511,16 @@ linked to.
         #
         _stdinc();
         #
-        _affix_and_export 'SDL_GetVersion', [], Callback [ [Void] => Int ];
-        _func_and_export SDL_MAJOR_VERSION => sub { state $i //= SDL_VERSIONNUM_MAJOR( SDL_GetVersion() ); $i };
-        _func_and_export SDL_MINOR_VERSION => sub { state $i //= SDL_VERSIONNUM_MINOR( SDL_GetVersion() ); $i };
-        _func_and_export SDL_MICRO_VERSION => sub { state $i //= SDL_VERSIONNUM_MICRO( SDL_GetVersion() ); $i };
-        _func_and_export( SDL_VERSIONNUM       => sub ( $major, $minor, $patch ) { ( ($major) * 1000000 + ($minor) * 1000 + ($patch) ) } );
-        _func_and_export( SDL_VERSIONNUM_MAJOR => sub ($version) { ( ($version) / 1000000 ) } );
-        _func_and_export( SDL_VERSIONNUM_MINOR => sub ($version) { ( ( ($version) / 1000 ) % 1000 ) } );
-        _func_and_export( SDL_VERSIONNUM_MICRO => sub ($version) { ( ($version) % 1000 ) } );
+        _affix_and_export 'SDL_GetVersion', [], Int;
+        _func_and_export SDL_MAJOR_VERSION    => sub () { state $i //= SDL_VERSIONNUM_MAJOR( SDL_GetVersion() ); $i };
+        _func_and_export SDL_MINOR_VERSION    => sub () { state $i //= SDL_VERSIONNUM_MINOR( SDL_GetVersion() ); $i };
+        _func_and_export SDL_MICRO_VERSION    => sub () { state $i //= SDL_VERSIONNUM_MICRO( SDL_GetVersion() ); $i };
+        _func_and_export SDL_VERSIONNUM       => sub ( $major, $minor, $patch ) { ( ($major) * 1000000 + ($minor) * 1000 + ($patch) ) };
+        _func_and_export SDL_VERSIONNUM_MAJOR => sub ($version) { int( ($version) / 1000000 ) };
+        _func_and_export SDL_VERSIONNUM_MINOR => sub ($version) { int( ( ($version) / 1000 ) % 1000 ) };
+        _func_and_export SDL_VERSIONNUM_MICRO => sub ($version) { int( ($version) % 1000 ) };
         _const_and_export SDL_VERSION => SDL_VERSIONNUM( SDL_MAJOR_VERSION(), SDL_MINOR_VERSION(), SDL_MICRO_VERSION() );
-        _func_and_export( SDL_VERSION_ATLEAST => sub ( $X, $Y, $Z ) { ( SDL_VERSION() >= SDL_VERSIONNUM( $X, $Y, $Z ) ) } );
+        _func_and_export SDL_VERSION_ATLEAST => sub ( $X, $Y, $Z ) { ( SDL_VERSION() >= SDL_VERSIONNUM( $X, $Y, $Z ) ); };
     }
 
 =head3 :video
@@ -5918,21 +5920,6 @@ Functions for creating Vulkan surfaces on SDL windows.
     }
 }
 1;
-__END__
-=encoding utf-8
-
-=head1 NAME
-
-SDL3 - Simple DirectMedia Layer 3.0
-
-=head1 SYNOPSIS
-
-    use SDL3;
-    ...;
-
-=head1 DESCRIPTION
-
-FFI Wrapper of SDL3
 
 =head1 See Also
 

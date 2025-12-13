@@ -295,6 +295,8 @@ register a callback that is fired when the user clicks on these pieces.
 Functionality to query the current SDL version, both as headers the app was compiled against, and a library the app is
 linked to.
 
+See [SDL3: CategoryVersion](https://wiki.libsdl.org/SDL3/CategoryVersion)
+
 ### :video
 
 SDL's video subsystem is largely interested in abstracting window management from the underlying operating system. You
@@ -306,21 +308,6 @@ See [SDL3: CategoryVideo](https://wiki.libsdl.org/SDL3/CategoryVideo)
 ### :vulkan
 
 Functions for creating Vulkan surfaces on SDL windows.
-
-# NAME
-
-SDL3 - Simple DirectMedia Layer 3.0
-
-# SYNOPSIS
-
-```perl
-use SDL3;
-...;
-```
-
-# DESCRIPTION
-
-FFI Wrapper of SDL3
 
 # See Also
 
