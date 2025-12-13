@@ -45,7 +45,7 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Affix" : "v1.0.0",
+            "Affix" : "v1.0.1",
             "Alien::SDL3" : "v2.24.0"
          }
       },
@@ -91,7 +91,7 @@
       },
       "runtime" : {
          "requires" : {
-            "Affix" : "v1.0.0",
+            "Affix" : "v1.0.1",
             "Alien::SDL3" : "v2.24.0",
             "Carp" : "0",
             "Data::Dump" : "0",
@@ -110,7 +110,7 @@
       },
       "x_build" : {
          "requires" : {
-            "Affix" : "v1.0.0",
+            "Affix" : "v1.0.1",
             "Alien::SDL3" : "v2.24.0"
          }
       }

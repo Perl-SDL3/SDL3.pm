@@ -38,3 +38,6 @@ eg/lib/*.pm
 *.session
 
 MANIFEST
+
+pod2htmd.tmp
+SDL3.html
