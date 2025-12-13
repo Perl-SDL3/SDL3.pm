@@ -4,7 +4,6 @@ use Test2::Util::Importer 'Test2::Tools::Subtest' => ( subtest_streamed => { -as
 use lib 'lib', '../lib', 'blib/lib', '../blib/lib';
 use SDL3;
 #
-ok $SDL3::VERSION, 'SDL3::VERSION';
-
+ok $SDL3::VERSION, 'SDL3::VERSION: ' . $SDL3::VERSION;
 #
 done_testing;
