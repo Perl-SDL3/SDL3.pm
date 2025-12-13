@@ -1,6 +1,6 @@
 {
    "X_No_Archive" : "Yes",
-   "abstract" : "Simple DirectMedia Layer 3.0",
+   "abstract" : "Perl Wrapper for the Simple DirectMedia Layer 3.0",
    "author" : [
       "Sanko Robinson <sanko@cpan.org>"
    ],

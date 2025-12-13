@@ -5,20 +5,6 @@ package SDL3 v0.0.2 {
     use Alien::SDL3;
     use Carp   qw[croak cluck confess];
     use Config qw[%Config];
-    use Data::Dump;
-##########################################################################
-######## TODO:
-### Check on these:
-### _scancode
-### _stdinc
-### _surface
-### _events
-### _rect
-### _render
-### _system
-### _thread
-### _time
-### _tray
 
 =encoding utf-8
 
@@ -28,10 +14,35 @@ SDL3 - Perl Wrapper for the Simple DirectMedia Layer 3.0
 
 =head1 SYNOPSIS
 
-    use SDL3 qw[:all];
+    use v5.40;
+    use SDL3 qw[:all :main];
+    my ( $x, $y, $dx, $dy, $ren ) = ( 300, 200, 5, 5 );
 
-    my $window = SDL_CreateWindow( 'My Game', 640, 480, 0 );
-    # ...do stuff
+    sub SDL_AppInit( $app, $ac, $av ) {
+        state $win;
+        SDL_Init(SDL_INIT_VIDEO);
+        SDL_CreateWindowAndRenderer( 'Bouncing Box', 640, 480, 0, \$win, \$ren );
+        SDL_SetRenderVSync( $ren, 1 );
+        SDL_APP_CONTINUE;
+    }
+
+    sub SDL_AppEvent( $app, $ev ) {
+        $ev->{type} == SDL_EVENT_QUIT ? SDL_APP_SUCCESS : SDL_APP_CONTINUE;
+    }
+
+    sub SDL_AppIterate($app) {
+        $dx *= -1 if $x <= 0 || $x >= 620;    # Bounce X (Window 640 - Rect 20)
+        $dy *= -1 if $y <= 0 || $y >= 460;    # Bounce Y (Window 480 - Rect 20)
+        $x  += $dx;
+        $y  += $dy;
+        SDL_SetRenderDrawColor( $ren, 20, 20, 30, 255 );
+        SDL_RenderClear($ren);
+        SDL_SetRenderDrawColor( $ren, int($x) % 255, int($y) % 255, 200, 255 );
+        SDL_RenderFillRect( $ren, { x => $x, y => $y, w => 20, h => 20 } );
+        SDL_RenderPresent($ren);
+        SDL_APP_CONTINUE;
+    }
+    sub SDL_AppQuit { }
 
 =head1 DESCRIPTION
 
@@ -61,9 +72,6 @@ Each feature listed below is a tag you may use to import with.
         @EXPORT_OK = sort map {@$_} values %EXPORT_TAGS;
         $EXPORT_TAGS{all} = [@EXPORT_OK];
         SDL3->export_to_level( 1, $pkg, @wants );
-
-        #~ ddx \%EXPORT_TAGS;
-        #~ ddx \@EXPORT_OK;
     }
     #
     sub _affix_and_export( $name, $args, $ret ) {
