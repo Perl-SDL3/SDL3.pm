@@ -41,7 +41,8 @@ sub SDL_AppQuit { }
 This module provides a Perl wrapper for SDL3, a cross-platform development library designed to provide low level access
 to audio, keyboard, mouse, joystick, and graphics hardware.
 
-This is very much still under construction. There are a few examples in this distribution's `eg/` directory but a few games and other demos I've written may be found on github: [https://github.com/sanko/SDL3.pm-demos](https://github.com/sanko/SDL3.pm-demos).
+This is very much still under construction. There are a few examples in this distribution's `eg/` directory but a few
+games and other demos I've written may be found on github: [https://github.com/sanko/SDL3.pm-demos](https://github.com/sanko/SDL3.pm-demos).
 
 ## Features
 
@@ -85,7 +86,7 @@ Functions for fiddling with bits and bitmasks.
 
 See [SDL3: CategoryBits](https://wiki.libsdl.org/SDL3/CategoryBits)
 
-### [:blendmode](https://metacpan.org/pod/%3Ablendmode) - Blend modes
+### `:blendmode` - Blend modes
 
 Blend modes decide how two colors will mix together. There are both standard modes for basic needs and a means to
 create custom modes, dictating what sort of math to do on what color components.
@@ -475,7 +476,9 @@ See [SDL3: CategoryVulkan](https://wiki.libsdl.org/SDL3/CategoryVulkan)
 
 # See Also
 
-TODO
+The project's repo: [https://github.com/Perl-SDL3/SDL3.pm](https://github.com/Perl-SDL3/SDL3.pm)
+
+The SDL3 Wiki: [https://wiki.libsdl.org/SDL3/FrontPage](https://wiki.libsdl.org/SDL3/FrontPage)
 
 # LICENSE
 

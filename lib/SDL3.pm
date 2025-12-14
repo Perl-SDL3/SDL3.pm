@@ -435,7 +435,7 @@ See L<SDL3: CategoryBits|https://wiki.libsdl.org/SDL3/CategoryBits>
         # We don't need this... do we?
     }
 
-=head3 L<:blendmode> - Blend modes
+=head3 C<:blendmode> - Blend modes
 
 Blend modes decide how two colors will mix together. There are both standard modes for basic needs and a means to
 create custom modes, dictating what sort of math to do on what color components.
@@ -5950,7 +5950,7 @@ See L<SDL3: CategoryVulkan|https://wiki.libsdl.org/SDL3/CategoryVulkan>
     }
 
     END {    # For :main
-        return if $? != 0;    # We are crashing or exiting with error; do not run hooks.
+        return if $? != 0;    # Don't run hook, we're crashing or exiting with an error
         $main_hook // return;
         my $SDL_AppInit    = $main_hook->can('SDL_AppInit')    // sub { SDL_Log('Missing SDL_AppInit callback for :main');    SDL_APP_FAILURE() };
         my $SDL_AppEvent   = $main_hook->can('SDL_AppEvent')   // sub { SDL_Log('Missing SDL_AppEvent callback for :main');   SDL_APP_FAILURE() };
@@ -5963,7 +5963,9 @@ See L<SDL3: CategoryVulkan|https://wiki.libsdl.org/SDL3/CategoryVulkan>
 
 =head1 See Also
 
-TODO
+The project's repo: L<https://github.com/Perl-SDL3/SDL3.pm>
+
+The SDL3 Wiki: L<https://wiki.libsdl.org/SDL3/FrontPage>
 
 =head1 LICENSE
 
