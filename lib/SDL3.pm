@@ -49,7 +49,8 @@ SDL3 - Perl Wrapper for the Simple DirectMedia Layer 3.0
 This module provides a Perl wrapper for SDL3, a cross-platform development library designed to provide low level access
 to audio, keyboard, mouse, joystick, and graphics hardware.
 
-This is very much still under construction.
+This is very much still under construction. There are a few examples in this distribution's C<eg/> directory but a few
+games and other demos I've written may be found on github: L<https://github.com/sanko/SDL3.pm-demos>.
 
 =head2 Features
 
@@ -5536,7 +5537,8 @@ See L<SDL3: CategoryVersion|https://wiki.libsdl.org/SDL3/CategoryVersion>
         #
         _stdinc();
         #
-        _affix_and_export 'SDL_GetVersion', [], Int;
+        _affix_and_export 'SDL_GetVersion',  [], Int;
+        _affix_and_export 'SDL_GetRevision', [], Int;
         _func_and_export SDL_MAJOR_VERSION    => sub () { state $i //= SDL_VERSIONNUM_MAJOR( SDL_GetVersion() ); $i };
         _func_and_export SDL_MINOR_VERSION    => sub () { state $i //= SDL_VERSIONNUM_MINOR( SDL_GetVersion() ); $i };
         _func_and_export SDL_MICRO_VERSION    => sub () { state $i //= SDL_VERSIONNUM_MICRO( SDL_GetVersion() ); $i };
@@ -5824,7 +5826,7 @@ See L<SDL3: CategoryVideo|https://wiki.libsdl.org/SDL3/CategoryVideo>
         _affix_and_export SDL_GetWindowTitle        => [ Pointer [ SDL_Window() ] ], String;
         _affix_and_export SDL_SetWindowIcon         => [ Pointer [ SDL_Window() ], Pointer [ SDL_Surface() ] ], Bool;
         _affix_and_export SDL_SetWindowPosition     => [ Pointer [ SDL_Window() ], Int, Int ], Bool;
-        _affix_and_export SDL_GetWindowPosition     => [ Pointer [ SDL_Window() ], Int, Int ], Bool;
+        _affix_and_export SDL_GetWindowPosition     => [ Pointer [ SDL_Window() ], Pointer [Int], Pointer [Int] ], Bool;
         _affix_and_export SDL_SetWindowSize         => [ Pointer [ SDL_Window() ], Int, Int, ], Bool;
         _affix_and_export SDL_GetWindowSize         => [ Pointer [ SDL_Window() ], Pointer [Int], Pointer [Int] ], Bool;
         _affix_and_export SDL_GetWindowSafeArea     => [ Pointer [ SDL_Window() ], Pointer [ SDL_Rect() ] ], Bool;
