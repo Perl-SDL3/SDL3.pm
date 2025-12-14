@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-  - Require Affix v1.0.2 (see https://github.com/sanko/infix/pull/35)
+  - Require Affix v1.0.2 (critical fix for POSIX: https://github.com/sanko/infix/pull/35)
+
+### Added
+
+  - Copy of the synopsis is now in `eg/synopsis.pl`
 
 ## [v0.0.2] - 2025-12-14
 
