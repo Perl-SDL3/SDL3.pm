@@ -5009,216 +5009,177 @@ See L<SDL3: CategoryStdinc|https://wiki.libsdl.org/SDL3/CategoryStdinc>
         _func_and_export SDL_min   => sub ( $x, $y ) { ( ( ($x) < ($y) ) ? ($x) : ($y) ) };
         _func_and_export SDL_max   => sub ( $x, $y ) { ( ( ($x) > ($y) ) ? ($x) : ($y) ) };
         _func_and_export SDL_clamp => sub ( $x, $a, $b ) { ( ( ($x) < ($a) ) ? ($a) : ( ( ($x) > ($b) ) ? ($b) : ($x) ) ) };
-        _affix_and_export SDL_isalpha    => [Int], Int;
-        _affix_and_export SDL_isalnum    => [Int], Int;
-        _affix_and_export SDL_isblank    => [Int], Int;
-        _affix_and_export SDL_iscntrl    => [Int], Int;
-        _affix_and_export SDL_isdigit    => [Int], Int;
-        _affix_and_export SDL_isxdigit   => [Int], Int;
-        _affix_and_export SDL_ispunct    => [Int], Int;
-        _affix_and_export SDL_isspace    => [Int], Int;
-        _affix_and_export SDL_isupper    => [Int], Int;
-        _affix_and_export SDL_islower    => [Int], Int;
-        _affix_and_export SDL_isprint    => [Int], Int;
-        _affix_and_export SDL_isgraph    => [Int], Int;
-        _affix_and_export SDL_toupper    => [Int], Int;
-        _affix_and_export SDL_tolower    => [Int], Int;
-        _affix_and_export SDL_crc16      => [ UInt16, Pointer [Void], Size_t ], UInt16;
-        _affix_and_export SDL_crc32      => [ UInt32, Pointer [Void], Size_t ], UInt32;
-        _affix_and_export SDL_murmur3_32 => [ Pointer [Void], Size_t, UInt32 ], UInt32;
-        _affix_and_export SDL_memcpy     => [ Pointer [Void], Pointer [Void], Size_t ], Pointer [Void];
-        _affix_and_export SDL_memmove    => [ Pointer [Void], Pointer [Void], Size_t ], Pointer [Void];
-        _affix_and_export SDL_memset     => [ Pointer [Void], Int,    Size_t ], Pointer [Void];
-        _affix_and_export SDL_memset4    => [ Pointer [Void], UInt32, Size_t ], Pointer [Void];
-        _affix_and_export SDL_memcmp     => [ Pointer [Void], Pointer [Void], Size_t ], Int;
-        _affix_and_export SDL_wcslen     => [ Pointer [WChar] ], Size_t;
-        _affix_and_export SDL_wcsnlen    => [ Pointer [WChar], Size_t ], Size_t;
+        _affix_and_export SDL_isalpha     => [Int], Int;
+        _affix_and_export SDL_isalnum     => [Int], Int;
+        _affix_and_export SDL_isblank     => [Int], Int;
+        _affix_and_export SDL_iscntrl     => [Int], Int;
+        _affix_and_export SDL_isdigit     => [Int], Int;
+        _affix_and_export SDL_isxdigit    => [Int], Int;
+        _affix_and_export SDL_ispunct     => [Int], Int;
+        _affix_and_export SDL_isspace     => [Int], Int;
+        _affix_and_export SDL_isupper     => [Int], Int;
+        _affix_and_export SDL_islower     => [Int], Int;
+        _affix_and_export SDL_isprint     => [Int], Int;
+        _affix_and_export SDL_isgraph     => [Int], Int;
+        _affix_and_export SDL_toupper     => [Int], Int;
+        _affix_and_export SDL_tolower     => [Int], Int;
+        _affix_and_export SDL_crc16       => [ UInt16, Pointer [Void], Size_t ], UInt16;
+        _affix_and_export SDL_crc32       => [ UInt32, Pointer [Void], Size_t ], UInt32;
+        _affix_and_export SDL_murmur3_32  => [ Pointer [Void], Size_t, UInt32 ], UInt32;
+        _affix_and_export SDL_memcpy      => [ Pointer [Void], Pointer [Void], Size_t ], Pointer [Void];
+        _affix_and_export SDL_memmove     => [ Pointer [Void], Pointer [Void], Size_t ], Pointer [Void];
+        _affix_and_export SDL_memset      => [ Pointer [Void], Int,    Size_t ], Pointer [Void];
+        _affix_and_export SDL_memset4     => [ Pointer [Void], UInt32, Size_t ], Pointer [Void];
+        _affix_and_export SDL_memcmp      => [ Pointer [Void], Pointer [Void], Size_t ], Int;
+        _affix_and_export SDL_wcslen      => [ Pointer [WChar] ], Size_t;
+        _affix_and_export SDL_wcsnlen     => [ Pointer [WChar], Size_t ], Size_t;
+        _affix_and_export SDL_wcslcpy     => [ Pointer [WChar], WString, Size_t ], Size_t;
+        _affix_and_export SDL_wcslcat     => [ Pointer [WChar], WString, Size_t ], Size_t;
+        _affix_and_export SDL_wcsdup      => [WString], WString;
+        _affix_and_export SDL_wcsstr      => [ WString, WString ], WString;
+        _affix_and_export SDL_wcsnstr     => [ WString, WString, Size_t ], WString;
+        _affix_and_export SDL_wcscmp      => [ WString, WString ], Int;
+        _affix_and_export SDL_wcsncmp     => [ WString, WString, Size_t ], Int;
+        _affix_and_export SDL_wcscasecmp  => [ WString, WString ], Int;
+        _affix_and_export SDL_wcsncasecmp => [ WString, WString, Size_t ], Int;
+        _affix_and_export SDL_wcstol      => [ WString, Pointer [ Pointer [WChar] ], Int ], Long;
+        _affix_and_export SDL_strlen      => [String], Size_t;
+        _affix_and_export SDL_strnlen     => [ String, Size_t ], Size_t;
+        _affix_and_export SDL_strlcpy     => [ Pointer [UInt8], String, Size_t ], Size_t;
+        _affix_and_export SDL_utf8strlcpy => [ Pointer [UInt8], String, Size_t ], Size_t;
+        _affix_and_export SDL_strlcat     => [ Pointer [UInt8], String, Size_t ], Size_t;
+        _affix_and_export SDL_strdup      => [String], String;
+        _affix_and_export SDL_strndup     => [ String, Size_t ], String;
+        _affix_and_export SDL_strrev      => [ Pointer [UInt8] ], String;
+        _affix_and_export SDL_strupr      => [ Pointer [UInt8] ], String;
+        _affix_and_export SDL_strlwr      => [ Pointer [UInt8] ], String;
+        _affix_and_export SDL_strchr      => [ String, Int ],    String;
+        _affix_and_export SDL_strrchr     => [ String, Int ],    String;
+        _affix_and_export SDL_strstr      => [ String, String ], String;
+        _affix_and_export SDL_strnstr     => [ String, String, Size_t ], String;
+        _affix_and_export SDL_strcasestr  => [ String, String ], String;
+        _affix_and_export SDL_strtok_r    => [ Pointer [UInt8], String, Pointer [ Pointer [UInt8] ] ], String;
+        _affix_and_export SDL_utf8strlen  => [String], Size_t;
+        _affix_and_export SDL_utf8strnlen => [ String, Size_t ], Size_t;
+        _affix_and_export SDL_itoa        => [ Int,       Pointer [UInt8], Int ], String;
+        _affix_and_export SDL_uitoa       => [ UInt,      Pointer [UInt8], Int ], String;
+        _affix_and_export SDL_ltoa        => [ Long,      Pointer [UInt8], Int ], String;
+        _affix_and_export SDL_ultoa       => [ ULong,     Pointer [UInt8], Int ], String;
+        _affix_and_export SDL_lltoa       => [ LongLong,  Pointer [UInt8], Int ], String;
+        _affix_and_export SDL_ulltoa      => [ ULongLong, Pointer [UInt8], Int ], String;
+        _affix_and_export SDL_atoi        => [String], Int;
+        _affix_and_export SDL_atof        => [String], Double;
+        _affix_and_export SDL_strtol      => [ String, Pointer [ Pointer [UInt8] ], Int ], Long;
+        _affix_and_export SDL_strtoul     => [ String, Pointer [ Pointer [UInt8] ], Int ], ULong;
+        _affix_and_export SDL_strtoll     => [ String, Pointer [ Pointer [UInt8] ], Int ], LongLong;
+        _affix_and_export SDL_strtoull    => [ String, Pointer [ Pointer [UInt8] ], Int ], ULongLong;
+        _affix_and_export SDL_strtod      => [ String, Pointer [ Pointer [UInt8] ] ], Double;
+        _affix_and_export SDL_strcmp      => [ String, String ], Int;
+        _affix_and_export SDL_strncmp     => [ String, String, Size_t ], Int;
+        _affix_and_export SDL_strcasecmp  => [ String, String ], Int;
+        _affix_and_export SDL_strncasecmp => [ String, String, Size_t ], Int;
+        _affix_and_export SDL_strpbrk     => [ String, String ], String;
+        _const_and_export SDL_INVALID_UNICODE_CODEPOINT => 0xFFFD;
+        _affix_and_export SDL_StepUTF8     => [ Pointer [String], Pointer [Size_t] ], UInt32;
+        _affix_and_export SDL_StepBackUTF8 => [ String, Pointer [String] ], UInt32;
+        _affix_and_export SDL_UCS4ToUTF8   => [ UInt32, Pointer [UInt8] ],  String;
 
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_wcslcpy(SDL_OUT_Z_CAP(maxlen) wchar_t *dst, const wchar_t *src, size_t maxlen);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_wcslcat(SDL_INOUT_Z_CAP(maxlen) wchar_t *dst, const wchar_t *src, size_t maxlen);
-#~ extern SDL_DECLSPEC wchar_t * SDLCALL SDL_wcsdup(const wchar_t *wstr);
-#~ extern SDL_DECLSPEC wchar_t * SDLCALL SDL_wcsstr(const wchar_t *haystack, const wchar_t *needle);
-#~ extern SDL_DECLSPEC wchar_t * SDLCALL SDL_wcsnstr(const wchar_t *haystack, const wchar_t *needle, size_t maxlen);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_wcscmp(const wchar_t *str1, const wchar_t *str2);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_wcsncmp(const wchar_t *str1, const wchar_t *str2, size_t maxlen);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_wcscasecmp(const wchar_t *str1, const wchar_t *str2);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_wcsncasecmp(const wchar_t *str1, const wchar_t *str2, size_t maxlen);
-#~ extern SDL_DECLSPEC long SDLCALL SDL_wcstol(const wchar_t *str, wchar_t **endp, int base);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_strlen(const char *str);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_strnlen(const char *str, size_t maxlen);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_strlcpy(SDL_OUT_Z_CAP(maxlen) char *dst, const char *src, size_t maxlen);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_utf8strlcpy(SDL_OUT_Z_CAP(dst_bytes) char *dst, const char *src, size_t dst_bytes);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_strlcat(SDL_INOUT_Z_CAP(maxlen) char *dst, const char *src, size_t maxlen);
-#~ extern SDL_DECLSPEC SDL_MALLOC char * SDLCALL SDL_strdup(const char *str);
-#~ extern SDL_DECLSPEC SDL_MALLOC char * SDLCALL SDL_strndup(const char *str, size_t maxlen);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strrev(char *str);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strupr(char *str);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strlwr(char *str);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strchr(const char *str, int c);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strrchr(const char *str, int c);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strstr(const char *haystack, const char *needle);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strnstr(const char *haystack, const char *needle, size_t maxlen);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strcasestr(const char *haystack, const char *needle);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strtok_r(char *str, const char *delim, char **saveptr);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_utf8strlen(const char *str);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_utf8strnlen(const char *str, size_t bytes);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_itoa(int value, char *str, int radix);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_uitoa(unsigned int value, char *str, int radix);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_ltoa(long value, char *str, int radix);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_ultoa(unsigned long value, char *str, int radix);
-#~ #ifndef SDL_NOLONGLONG
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_lltoa(long long value, char *str, int radix);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_ulltoa(unsigned long long value, char *str, int radix);
-#~ #endif
-#~ extern SDL_DECLSPEC int SDLCALL SDL_atoi(const char *str);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_atof(const char *str);
-#~ extern SDL_DECLSPEC long SDLCALL SDL_strtol(const char *str, char **endp, int base);
-#~ extern SDL_DECLSPEC unsigned long SDLCALL SDL_strtoul(const char *str, char **endp, int base);
-#~ #ifndef SDL_NOLONGLONG
-#~ extern SDL_DECLSPEC long long SDLCALL SDL_strtoll(const char *str, char **endp, int base);
-#~ extern SDL_DECLSPEC unsigned long long SDLCALL SDL_strtoull(const char *str, char **endp, int base);
-#~ #endif
-#~ extern SDL_DECLSPEC double SDLCALL SDL_strtod(const char *str, char **endp);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_strcmp(const char *str1, const char *str2);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_strncmp(const char *str1, const char *str2, size_t maxlen);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_strcasecmp(const char *str1, const char *str2);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_strncasecmp(const char *str1, const char *str2, size_t maxlen);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_strpbrk(const char *str, const char *breakset);
-#~ #define SDL_INVALID_UNICODE_CODEPOINT 0xFFFD
-#~ extern SDL_DECLSPEC Uint32 SDLCALL SDL_StepUTF8(const char **pstr, size_t *pslen);
-#~ extern SDL_DECLSPEC Uint32 SDLCALL SDL_StepBackUTF8(const char *start, const char **pstr);
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_UCS4ToUTF8(Uint32 codepoint, char *dst);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_sscanf(const char *text, SDL_SCANF_FORMAT_STRING const char *fmt, ...) SDL_SCANF_VARARG_FUNC(2);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_vsscanf(const char *text, SDL_SCANF_FORMAT_STRING const char *fmt, va_list ap) SDL_SCANF_VARARG_FUNCV(2);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_snprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) SDL_PRINTF_VARARG_FUNC(3);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_swprintf(SDL_OUT_Z_CAP(maxlen) wchar_t *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const wchar_t *fmt, ...) SDL_WPRINTF_VARARG_FUNC(3);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const char *fmt, va_list ap) SDL_PRINTF_VARARG_FUNCV(3);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_vswprintf(SDL_OUT_Z_CAP(maxlen) wchar_t *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const wchar_t *fmt, va_list ap) SDL_WPRINTF_VARARG_FUNCV(3);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_asprintf(char **strp, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) SDL_PRINTF_VARARG_FUNC(2);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_vasprintf(char **strp, SDL_PRINTF_FORMAT_STRING const char *fmt, va_list ap) SDL_PRINTF_VARARG_FUNCV(2);
-#~ extern SDL_DECLSPEC void SDLCALL SDL_srand(Uint64 seed);
-#~ extern SDL_DECLSPEC Sint32 SDLCALL SDL_rand(Sint32 n);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_randf(void);
-#~ extern SDL_DECLSPEC Uint32 SDLCALL SDL_rand_bits(void);
-#~ extern SDL_DECLSPEC Sint32 SDLCALL SDL_rand_r(Uint64 *state, Sint32 n);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_randf_r(Uint64 *state);
-#~ extern SDL_DECLSPEC Uint32 SDLCALL SDL_rand_bits_r(Uint64 *state);
-#~ #ifndef SDL_PI_D
-#~ #define SDL_PI_D   3.141592653589793238462643383279502884
-#~ #endif
-#~ #ifndef SDL_PI_F
-#~ #define SDL_PI_F   3.141592653589793238462643383279502884F
-#~ #endif
-#~ extern SDL_DECLSPEC double SDLCALL SDL_acos(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_acosf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_asin(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_asinf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_atan(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_atanf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_atan2(double y, double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_atan2f(float y, float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_ceil(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_ceilf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_copysign(double x, double y);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_copysignf(float x, float y);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_cos(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_cosf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_exp(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_expf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_fabs(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_fabsf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_floor(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_floorf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_trunc(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_truncf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_fmod(double x, double y);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_fmodf(float x, float y);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_isinf(double x);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_isinff(float x);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_isnan(double x);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_isnanf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_log(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_logf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_log10(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_log10f(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_modf(double x, double *y);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_modff(float x, float *y);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_pow(double x, double y);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_powf(float x, float y);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_round(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_roundf(float x);
-#~ extern SDL_DECLSPEC long SDLCALL SDL_lround(double x);
-#~ extern SDL_DECLSPEC long SDLCALL SDL_lroundf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_scalbn(double x, int n);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_scalbnf(float x, int n);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_sin(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_sinf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_sqrt(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_sqrtf(float x);
-#~ extern SDL_DECLSPEC double SDLCALL SDL_tan(double x);
-#~ extern SDL_DECLSPEC float SDLCALL SDL_tanf(float x);
-#~ typedef struct SDL_iconv_data_t *SDL_iconv_t;
-#~ extern SDL_DECLSPEC SDL_iconv_t SDLCALL SDL_iconv_open(const char *tocode,
-#~ const char *fromcode);
-#~ extern SDL_DECLSPEC int SDLCALL SDL_iconv_close(SDL_iconv_t cd);
-#~ extern SDL_DECLSPEC size_t SDLCALL SDL_iconv(SDL_iconv_t cd, const char **inbuf,
-#~ size_t *inbytesleft, char **outbuf,
-#~ size_t *outbytesleft);
-#~ #define SDL_ICONV_ERROR     (size_t)-1
-#~ #define SDL_ICONV_E2BIG     (size_t)-2
-#~ #define SDL_ICONV_EILSEQ    (size_t)-3
-#~ #define SDL_ICONV_EINVAL    (size_t)-4
-#~ extern SDL_DECLSPEC char * SDLCALL SDL_iconv_string(const char *tocode,
-#~ const char *fromcode,
-#~ const char *inbuf,
-#~ size_t inbytesleft);
-#~ #define SDL_iconv_utf8_locale(S)    SDL_iconv_string("", "UTF-8", S, SDL_strlen(S)+1)
-#~ #define SDL_iconv_utf8_ucs2(S)      SDL_reinterpret_cast(Uint16 *, SDL_iconv_string("UCS-2", "UTF-8", S, SDL_strlen(S)+1))
-#~ #define SDL_iconv_utf8_ucs4(S)      SDL_reinterpret_cast(Uint32 *, SDL_iconv_string("UCS-4", "UTF-8", S, SDL_strlen(S)+1))
-#~ #define SDL_iconv_wchar_utf8(S)     SDL_iconv_string("UTF-8", "WCHAR_T", SDL_reinterpret_cast(const char *, S), (SDL_wcslen(S)+1)*sizeof(wchar_t))
-#~ #endif
-#~ SDL_FORCE_INLINE bool SDL_size_mul_check_overflow(size_t a, size_t b, size_t *ret)
-#~ {
-#~ if (a != 0 && b > SDL_SIZE_MAX / a) {
-#~ return false;
-#~ }
-#~ *ret = a * b;
-#~ return true;
-#~ }
-#~ #ifndef SDL_WIKI_DOCUMENTATION_SECTION
-#~ #if SDL_HAS_BUILTIN(__builtin_mul_overflow)
-#~ SDL_FORCE_INLINE bool SDL_size_mul_check_overflow_builtin(size_t a, size_t b, size_t *ret)
-#~ {
-#~ return (__builtin_mul_overflow(a, b, ret) == 0);
-#~ }
-#~ #define SDL_size_mul_check_overflow(a, b, ret) SDL_size_mul_check_overflow_builtin(a, b, ret)
-#~ #endif
-#~ #endif
-#~ SDL_FORCE_INLINE bool SDL_size_add_check_overflow(size_t a, size_t b, size_t *ret)
-#~ {
-#~ if (b > SDL_SIZE_MAX - a) {
-#~ return false;
-#~ }
-#~ *ret = a + b;
-#~ return true;
-#~ }
-#~ #ifndef SDL_WIKI_DOCUMENTATION_SECTION
-#~ #if SDL_HAS_BUILTIN(__builtin_add_overflow)
-#~ SDL_FORCE_INLINE bool SDL_size_add_check_overflow_builtin(size_t a, size_t b, size_t *ret)
-#~ {
-#~ return (__builtin_add_overflow(a, b, ret) == 0);
-#~ }
-#~ #define SDL_size_add_check_overflow(a, b, ret) SDL_size_add_check_overflow_builtin(a, b, ret)
-#~ #endif
-#~ #endif
-#~ #ifdef SDL_WIKI_DOCUMENTATION_SECTION
-#~ typedef void (*SDL_FunctionPointer)(void);
-#~ #elif defined(SDL_FUNCTION_POINTER_IS_VOID_POINTER)
-#~ typedef void *SDL_FunctionPointer;
-#~ #else
-#~ typedef void (*SDL_FunctionPointer)(void);
-#~ #endif
-#
+        #~ _affix_and_export SDL_sscanf       => [ String, String, VarArgs ],            Int;
+        _affix_and_export SDL_vsscanf => [ String, String, Pointer [Void] ], Int;
+
+        #~ _affix_and_export SDL_snprintf     => [ Pointer [UInt8], Size_t, String, VarArgs ], Int;
+        #~ _affix_and_export SDL_swprintf     => [ Pointer [WChar], Size_t, WString, VarArgs ], Int;
+        _affix_and_export SDL_vsnprintf => [ Pointer [UInt8], Size_t, String,  Pointer [Void] ], Int;
+        _affix_and_export SDL_vswprintf => [ Pointer [WChar], Size_t, WString, Pointer [Void] ], Int;
+
+        #~ _affix_and_export SDL_asprintf     => [ Pointer [ Pointer [UInt8] ], String, VarArgs ], Int;
+        _affix_and_export SDL_vasprintf   => [ Pointer [ Pointer [UInt8] ], String, Pointer [Void] ], Int;
+        _affix_and_export SDL_srand       => [UInt64], Void;
+        _affix_and_export SDL_rand        => [SInt32], SInt32;
+        _affix_and_export SDL_randf       => [], Float;
+        _affix_and_export SDL_rand_bits   => [], UInt32;
+        _affix_and_export SDL_rand_r      => [ Pointer [UInt64], SInt32 ], SInt32;
+        _affix_and_export SDL_randf_r     => [ Pointer [UInt64] ], Float;
+        _affix_and_export SDL_rand_bits_r => [ Pointer [UInt64] ], UInt32;
+        _const_and_export SDL_PI_D => 3.141592653589793238462643383279502884;
+        _const_and_export SDL_PI_F => 3.141592653589793238462643383279502884;
+        _affix_and_export SDL_acos      => [Double], Double;
+        _affix_and_export SDL_acosf     => [Float],  Float;
+        _affix_and_export SDL_asin      => [Double], Double;
+        _affix_and_export SDL_asinf     => [Float],  Float;
+        _affix_and_export SDL_atan      => [Double], Double;
+        _affix_and_export SDL_atanf     => [Float],  Float;
+        _affix_and_export SDL_atan2     => [ Double, Double ], Double;
+        _affix_and_export SDL_atan2f    => [ Float, Float ],   Float;
+        _affix_and_export SDL_ceil      => [Double], Double;
+        _affix_and_export SDL_ceilf     => [Float],  Float;
+        _affix_and_export SDL_copysign  => [ Double, Double ], Double;
+        _affix_and_export SDL_copysignf => [ Float, Float ],   Float;
+        _affix_and_export SDL_cos       => [Double], Double;
+        _affix_and_export SDL_cosf      => [Float],  Float;
+        _affix_and_export SDL_exp       => [Double], Double;
+        _affix_and_export SDL_expf      => [Float],  Float;
+        _affix_and_export SDL_fabs      => [Double], Double;
+        _affix_and_export SDL_fabsf     => [Float],  Float;
+        _affix_and_export SDL_floor     => [Double], Double;
+        _affix_and_export SDL_floorf    => [Float],  Float;
+        _affix_and_export SDL_trunc     => [Double], Double;
+        _affix_and_export SDL_truncf    => [Float],  Float;
+        _affix_and_export SDL_fmod      => [ Double, Double ], Double;
+        _affix_and_export SDL_fmodf     => [ Float, Float ],   Float;
+        _affix_and_export SDL_isinf     => [Double], Int;
+        _affix_and_export SDL_isinff    => [Float],  Int;
+        _affix_and_export SDL_isnan     => [Double], Int;
+        _affix_and_export SDL_isnanf    => [Float],  Int;
+        _affix_and_export SDL_log       => [Double], Double;
+        _affix_and_export SDL_logf      => [Float],  Float;
+        _affix_and_export SDL_log10     => [Double], Double;
+        _affix_and_export SDL_log10f    => [Float],  Float;
+        _affix_and_export SDL_modf      => [ Double, Pointer [Double] ], Double;
+        _affix_and_export SDL_modff     => [ Float, Pointer [Float] ],   Float;
+        _affix_and_export SDL_pow       => [ Double, Double ], Double;
+        _affix_and_export SDL_powf      => [ Float, Float ],   Float;
+        _affix_and_export SDL_round     => [Double], Double;
+        _affix_and_export SDL_roundf    => [Float],  Float;
+        _affix_and_export SDL_lround    => [Double], Long;
+        _affix_and_export SDL_lroundf   => [Float],  Long;
+        _affix_and_export SDL_scalbn    => [ Double, Int ], Double;
+        _affix_and_export SDL_scalbnf   => [ Float, Int ],  Float;
+        _affix_and_export SDL_sin       => [Double], Double;
+        _affix_and_export SDL_sinf      => [Float],  Float;
+        _affix_and_export SDL_sqrt      => [Double], Double;
+        _affix_and_export SDL_sqrtf     => [Float],  Float;
+        _affix_and_export SDL_tan       => [Double], Double;
+        _affix_and_export SDL_tanf      => [Float],  Float;
+        _typedef_and_export SDL_iconv_t => Pointer [Void];
+        _affix_and_export SDL_iconv_open => [ String, String ], SDL_iconv_t();
+        _affix_and_export SDL_iconv_close => [ SDL_iconv_t() ], Int;
+        _affix_and_export
+            SDL_iconv => [ SDL_iconv_t(), Pointer [ Pointer [UInt8] ], Pointer [Size_t], Pointer [ Pointer [UInt8] ], Pointer [Size_t] ],
+            Size_t;
+        _const_and_export SDL_ICONV_ERROR  => -1;
+        _const_and_export SDL_ICONV_E2BIG  => -2;
+        _const_and_export SDL_ICONV_EILSEQ => -3;
+        _const_and_export SDL_ICONV_EINVAL => -4;
+        #
+        _affix_and_export SDL_iconv_string => [ String, String, String, Size_t ], Pointer [UInt8];
+        _func_and_export SDL_iconv_utf8_locale => sub ($S) { SDL_iconv_string( '',      'UTF-8', $S, SDL_strlen($S) + 1 ) };
+        _func_and_export SDL_iconv_utf8_ucs2   => sub ($S) { SDL_iconv_string( 'UCS-2', 'UTF-8', $S, SDL_strlen($S) + 1 ) };
+        _func_and_export SDL_iconv_utf8_ucs4   => sub ($S) { SDL_iconv_string( 'UCS-4', 'UTF-8', $S, SDL_strlen($S) + 1 ) };
+        _func_and_export SDL_iconv_wchar_utf8 => sub ($S) { SDL_iconv_string( 'UTF-8', 'WCHAR_T', $S, ( SDL_wcslen($S) + 1 ) * length( pack 'P' ) ) };
+        #
+        my $max_size_t = ( 2**( $Config{ptrsize} * 8 ) ) - 1;
+        _func_and_export SDL_size_mul_check_overflow => sub ( $a, $b, $ret ) {
+            return 0 if ( $a != 0 && $b > $max_size_t / $a );
+            $$ret = $a * $b;
+            return 1;
+        };
+        _func_and_export SDL_size_add_check_overflow => sub ( $a, $b, $ret ) {
+            return 0 if ( $b > $max_size_t - $a );
+            $$ret = $a + $b;
+            return 1;
+        };
+        #
         _typedef_and_export SDL_FunctionPointer => Callback [ [] => Void ];
     }
 
