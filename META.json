@@ -145,7 +145,7 @@
       ".tidyallrc",
       ".gitignore",
       ".clang-format",
-      ".github/",
+      ".github/**",
       "eg/dev.pl"
    ],
    "x_serialization_backend" : "JSON::PP version 4.16",
