@@ -49,8 +49,8 @@ SDL3 - Perl Wrapper for the Simple DirectMedia Layer 3.0
 This module provides a Perl wrapper for SDL3, a cross-platform development library designed to provide low level access
 to audio, keyboard, mouse, joystick, and graphics hardware.
 
-This is very much still under construction. There are a few examples in this distribution's C<eg/> directory but a few
-games and other demos I've written may be found on github: L<https://github.com/sanko/SDL3.pm-demos>.
+There are a few examples in this distribution's C<eg/> directory but games and other demos I've written may be found on
+github: L<https://github.com/sanko/SDL3.pm-demos>.
 
 =head2 Features
 
