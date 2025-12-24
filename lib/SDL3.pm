@@ -3369,9 +3369,13 @@ See F<eg/hello_world.pl> for an example and L<SDL3: CategoryMain|https://wiki.li
             SDL_EnterAppMainCallbacks =>
             [ Int, Pointer [String], SDL_AppInit_func(), SDL_AppIterate_func(), SDL_AppEvent_func(), SDL_AppQuit_func() ],
             Int;
-        _affix_and_export SDL_RegisterApp        => [ String, UInt32, Pointer [Void] ], Bool;
-        _affix_and_export SDL_UnregisterApp      => [], Void;
-        _affix_and_export SDL_GDKSuspendComplete => [], Void;
+        if ( $^O eq 'MSWin32' ) {
+            _affix_and_export SDL_RegisterApp        => [ String, UInt32, Pointer [Void] ], Bool;
+            _affix_and_export SDL_UnregisterApp      => [], Void;
+            _affix_and_export SDL_GDKRunApp          => [], Void;
+            _affix_and_export SDL_GDKRunApp          => [ SDL_main_func(), Pointer [Void] ], Int;
+            _affix_and_export SDL_GDKSuspendComplete => [], Void;
+        }
     }
 
 =head3 C<:messagebox> - Message Boxes
