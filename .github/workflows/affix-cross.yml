@@ -26,10 +26,10 @@ jobs:
             whoami
             env | sort
             ${{ inputs.setup }}
-            sudo ${{inputs.pkg}} perl5
+            sudo ${{inputs.pkg}} perl5 wayland wayland-protocols sdl3
             perl -v
             curl -L https://cpanmin.us | sudo perl - --notest App::cpanminus Module::Build::Tiny
-            sudo cpanm --installdeps --notest .
+            sudo cpanm --installdeps --notest -v .
             sudo cpanm --test-only -v .
             command1_exit_code=$?
             # Check if the first command exited successfully (exit code 0)
