@@ -21,13 +21,14 @@ jobs:
         perl:
           - 5.40
       max-parallel: 5
-    uses: ./.github/workflows/affix-cross.yml
+    uses: ./.github/workflows/cross.yml
     with:
       arch: '${{ matrix.os.architecture }}'
       host: '${{ matrix.os.host }}'
       os: '${{ matrix.os.name }}'
       perl: '${{ matrix.perl }}'
       pkg: '${{ matrix.os.pkg }}'
+      setup: '${{ matrix.os.setup }}'
       version: '${{ matrix.os.version }}'
   linux:
     name: 'Linux/v${{matrix.perl}}'
@@ -36,22 +37,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flags:
-          - ''
-          - -Dusethreads
-          - -Duselongdouble
-          - -Dusequadmath
+        flags: '${{ fromJSON(needs.setup.outputs.matrix).flags }}'
         os:
-          - ubuntu-22.04
+          - ubuntu-24.04
         perl: '${{ fromJSON(needs.setup.outputs.matrix).perl }}'
       max-parallel: 25
-    uses: ./.github/workflows/affix-unix.yml
+    uses: ./.github/workflows/unix.yml
     with:
       flags: '${{ matrix.flags }}'
       os: '${{ matrix.os }}'
       perl: '${{ matrix.perl }}'
   macos:
-    name: "[${{ matrix.os == 'macos-14' && 'M1' || 'Intel' }}] macOS/v${{matrix.perl}}"
+    name: "[${{ matrix.os == 'macos-15-intel' && 'Intel' || 'M1' }}] macOS/v${{matrix.perl}}"
     needs:
       - setup
     strategy:
@@ -62,11 +59,11 @@ jobs:
           - flags: -Dusethreads
         flags: '${{ fromJSON(needs.setup.outputs.matrix).flags }}'
         os:
-          - macos-14
-          - macos-latest
+          - macos-15-intel
+          - macos-15
         perl: '${{ fromJSON(needs.setup.outputs.matrix).perl }}'
       max-parallel: 25
-    uses: ./.github/workflows/affix-unix.yml
+    uses: ./.github/workflows/unix.yml
     with:
       flags: '${{ matrix.flags }}'
       os: '${{ matrix.os }}'
@@ -117,8 +114,8 @@ jobs:
       - env:
           DATA: |
             {
-              "perl":  ["5.40.0"],
-              "flags": ["", "-Dusethreads", "-Duselongdouble", "-Dusequadmath"]
+              "perl":  ["5.42.0"],
+              "flags": ["", "-Dusethreads", "-Duselongdouble", "-Dusequadmath", "--debug", "-DDEBUGGING=both", "-DDEBUGGING=-g", "-Doptimize=-g", "-DDEBUGGING=none", "-UDEBUGGING"]
             }
         id: matrix
         run: "jq -rn 'env.DATA | fromjson | @json \"matrix=\\(.)\"' > $GITHUB_OUTPUT\n"
@@ -139,7 +136,7 @@ jobs:
           - windows-2022
         perl: '${{ fromJSON(needs.setup.outputs.matrix).perl }}'
       max-parallel: 25
-    uses: ./.github/workflows/affix-win32.yml
+    uses: ./.github/workflows/win32.yml
     with:
       flags: '${{ matrix.flags }}'
       os: '${{ matrix.os }}'

@@ -8,21 +8,18 @@ jobs:
         with:
           submodules: true
       - name: Setup Perl environment
-        uses: shogo82148/actions-setup-perl@v1.36.0
+        uses: shogo82148/actions-setup-perl@v1.37.1
         with:
           distribution: "${{ inputs.flags == '-Dusethreads' && 'strawberry' || 'default' }}"
           multi-thread: "${{ inputs.flags == '-Dusethreads' && true || false }}"
           perl-version: '${{ inputs.perl }}'
       - name: Install prereqs
-        run: cpanm --installdeps --notest -v .
+        run: cpanm --installdeps --notest --with-suggests --with-recommends --with-configure -v .
       - name: Run tests
         run: |
           perl -V
-          
-          perl Build.PL
-          ./Build
-          ./Build test --v
-          
+          cpanm --test-only -v .
+
           if ($LASTEXITCODE -eq 0) {
             perl -V > test-output-${{ inputs.os }}-${{ inputs.perl }}${{ inputs.flags }}.txt
           } else {
