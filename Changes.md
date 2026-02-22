@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
   - Several functions in `:main` only exist on Windows but were being bound (and failing) on all systems.
+  - `:log` functions now support `sprintf` style args that Affix supports varargs. `SDL_Log( 'Current player: %s, Location: x:%d y:%d', 'John', 200, 345 );`
 
 ## [v0.0.3] - 2025-12-14
 

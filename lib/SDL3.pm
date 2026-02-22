@@ -59,8 +59,8 @@ Each feature listed below is a tag you may use.
 =cut
 
     my ( $lib, @etc ) = Alien::SDL3->dynamic_libs;
-    croak "Could not find library" unless $lib;
-    Affix::load_library($_) or die "Could not find $_" for $lib, @etc;
+    croak 'Could not find library' unless $lib;
+    Affix::load_library($_) or die 'Could not find ' . $_ for $lib, @etc;
     our ( %EXPORT_TAGS, @EXPORT_OK );
     my $main_hook;
 
@@ -3310,32 +3310,24 @@ See L<SDL3: CategoryLog|https://wiki.libsdl.org/SDL3/CategoryLog>
             'SDL_LOG_PRIORITY_INFO',    'SDL_LOG_PRIORITY_WARN',  'SDL_LOG_PRIORITY_ERROR',   'SDL_LOG_PRIORITY_CRITICAL',
             'SDL_LOG_PRIORITY_COUNT'
         ];
+        #
+        _typedef_and_export SDL_LogOutputFunction => Callback [ [ Pointer [Void], Int, SDL_LogPriority(), String ] => Void ];
+        #
         _affix_and_export SDL_SetLogPriorities     => [ SDL_LogPriority() ], Void;
         _affix_and_export SDL_SetLogPriority       => [ Int, SDL_LogPriority() ], Void;
         _affix_and_export SDL_GetLogPriority       => [Int], SDL_LogPriority();
         _affix_and_export SDL_ResetLogPriorities   => [], Void;
         _affix_and_export SDL_SetLogPriorityPrefix => [ SDL_LogPriority(), String ], Bool;
-
-        #~ ...oy.
-        #~ _affix_and_export SDL_Log                  => [ String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogTrace             => [ Int, String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogVerbose           => [ Int, String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogDebug             => [ Int, String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogInfo              => [ Int, String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogWarn              => [ Int, String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogError             => [ Int, String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogCritical          => [ Int, String, VarArgs ], Void;
-        #~ _affix_and_export SDL_LogMessage           => [ Int, SDL_LogPriority(), String, VarArgs ], Void;
-        _affix_and_export SDL_Log         => [String], Void;
-        _affix_and_export SDL_LogTrace    => [ Int, String ], Void;
-        _affix_and_export SDL_LogVerbose  => [ Int, String ], Void;
-        _affix_and_export SDL_LogDebug    => [ Int, String ], Void;
-        _affix_and_export SDL_LogInfo     => [ Int, String ], Void;
-        _affix_and_export SDL_LogWarn     => [ Int, String ], Void;
-        _affix_and_export SDL_LogError    => [ Int, String ], Void;
-        _affix_and_export SDL_LogCritical => [ Int, String ], Void;
-        _affix_and_export SDL_LogMessage  => [ Int, SDL_LogPriority(), String ], Void;
-        _typedef_and_export SDL_LogOutputFunction => Callback [ [ Pointer [Void], Int, SDL_LogPriority(), String ] => Void ];
+        #
+        _affix_and_export SDL_Log                         => [ String, VarArgs ], Void;
+        _affix_and_export SDL_LogTrace                    => [ Int, String, VarArgs ], Void;
+        _affix_and_export SDL_LogVerbose                  => [ Int, String, VarArgs ], Void;
+        _affix_and_export SDL_LogDebug                    => [ Int, String, VarArgs ], Void;
+        _affix_and_export SDL_LogInfo                     => [ Int, String, VarArgs ], Void;
+        _affix_and_export SDL_LogWarn                     => [ Int, String, VarArgs ], Void;
+        _affix_and_export SDL_LogError                    => [ Int, String, VarArgs ], Void;
+        _affix_and_export SDL_LogCritical                 => [ Int, String, VarArgs ], Void;
+        _affix_and_export SDL_LogMessage                  => [ Int, SDL_LogPriority(), String, VarArgs ], Void;
         _affix_and_export SDL_GetDefaultLogOutputFunction => [], SDL_LogOutputFunction();
         _affix_and_export SDL_GetLogOutputFunction        => [ Pointer [ SDL_LogOutputFunction() ], Pointer [ Pointer [Void] ] ], Void;
         _affix_and_export SDL_SetLogOutputFunction        => [ SDL_LogOutputFunction(), Pointer [Void] ], Void;
