@@ -45,7 +45,7 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Affix" : "v1.0.2",
+            "Affix" : "v1.1.0",
             "Alien::SDL3" : "v2.24.0"
          }
       },
@@ -91,7 +91,7 @@
       },
       "runtime" : {
          "requires" : {
-            "Affix" : "v1.0.2",
+            "Affix" : "v1.1.0",
             "Alien::SDL3" : "v2.24.0",
             "Carp" : "0",
             "Data::Dump" : "0",
@@ -106,12 +106,6 @@
             "Test2::Plugin::UTF8" : "0",
             "Test2::Tools::Compare" : "0",
             "Test2::V0" : "0"
-         }
-      },
-      "x_build" : {
-         "requires" : {
-            "Affix" : "v1.0.2",
-            "Alien::SDL3" : "v2.24.0"
          }
       }
    },

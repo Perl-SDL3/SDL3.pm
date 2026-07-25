@@ -19,7 +19,7 @@ jobs:
         run: |
           perl -V
           cpanm --test-only -v .
-
+          
           if ($LASTEXITCODE -eq 0) {
             perl -V > test-output-${{ inputs.os }}-${{ inputs.perl }}${{ inputs.flags }}.txt
           } else {

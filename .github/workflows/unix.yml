@@ -33,7 +33,7 @@ jobs:
           if [[ $(uname -o) == GNU/Linux ]]; then
             sudo apt-get update -y
             sudo apt-get install -y valgrind libatomic1 libwayland-dev libxext-dev libxinerama-dev libxrandr-dev libxss-dev libxkbcommon-dev libxtst-dev libxv-dev libxxf86vm-dev libdbus-1-dev libudev-dev libgles2-mesa-dev libegl1-mesa-dev libgl1-mesa-dev libibus-1.0-dev libpulse-dev libsamplerate0-dev libsndio-dev libpipewire-0.3-dev libdecor-0-dev libxcursor-dev
-
+          
           fi
           source ~/perl5/perlbrew/etc/bashrc
           perlbrew switch cache-${{ inputs.os }}-${{ inputs.perl }}${{ inputs.flags }}
