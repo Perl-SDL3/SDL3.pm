@@ -47,7 +47,7 @@ jobs:
           version: '${{ inputs.version }}'
       - continue-on-error: true
         name: Upload results as artifact
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v7.0.1
         with:
           if-no-files-found: error
           name: 'test-output-${{ inputs.os }}-${{ inputs.version }}-perl${{ inputs.perl }}.${{inputs.perl_subversion}}-${{ inputs.arch }}'

@@ -27,7 +27,7 @@ jobs:
             exit $LASTEXITCODE
           }
       - name: Upload results as artifact
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v7.0.1
         with:
           if-no-files-found: error
           name: 'test-output-${{ inputs.os }}-${{ inputs.perl }}${{ inputs.flags }}'
