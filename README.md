@@ -480,9 +480,11 @@ The project's repo: [https://github.com/Perl-SDL3/SDL3.pm](https://github.com/Pe
 
 The SDL3 Wiki: [https://wiki.libsdl.org/SDL3/FrontPage](https://wiki.libsdl.org/SDL3/FrontPage)
 
+[Affix](https://metacpan.org/pod/Affix)
+
 # LICENSE
 
-This software is Copyright (c) 2025 by Sanko Robinson <sanko@cpan.org>.
+This software is Copyright (c) 2025 by Sanko Robinson.
 
 This is free software, licensed under:
 
@@ -494,4 +496,4 @@ See the `LICENSE` file for full text.
 
 # AUTHOR
 
-Sanko Robinson <sanko@cpan.org>
+Sanko Robinson [https://github.com/sanko](https://github.com/sanko)
