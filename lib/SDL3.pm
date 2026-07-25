@@ -1,4 +1,4 @@
-package SDL3 v0.0.3 {
+package SDL3 v0.0.4 {
     use v5.40;
     use base 'Exporter';
     use Affix qw[:all];
@@ -5963,9 +5963,11 @@ The project's repo: L<https://github.com/Perl-SDL3/SDL3.pm>
 
 The SDL3 Wiki: L<https://wiki.libsdl.org/SDL3/FrontPage>
 
+L<Affix>
+
 =head1 LICENSE
 
-This software is Copyright (c) 2025 by Sanko Robinson E<lt>sanko@cpan.orgE<gt>.
+This software is Copyright (c) 2025 by Sanko Robinson.
 
 This is free software, licensed under:
 
@@ -5975,7 +5977,7 @@ See the F<LICENSE> file for full text.
 
 =head1 AUTHOR
 
-Sanko Robinson <sanko@cpan.org>
+Sanko Robinson L<https://github.com/sanko>
 
 =begin stopwords
 
