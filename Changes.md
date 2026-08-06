@@ -13,6 +13,7 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 
 - `eg/audio/polysynth.pl` - a simple polyphonic synthesizer
 - `eg/basics/boids.pl` - an [artificial life algotithm](https://en.wikipedia.org/wiki/Boids)
+- `eg/basics/bunny_bench.pl` - benchmark of Affix's hot path disguised as an SDL demo
 
 ### Fixed
 
