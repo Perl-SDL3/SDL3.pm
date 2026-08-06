@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `SDL_AppEvent` callback prototype to expect a pointer to an `SDL_Event`.
 
+### Removed
+- `SDL_GDKRunApp` and `SDL_UIKitRunApp` have been deprecated upstream (use `SDL_RunApp` instead).
+
 ## [v0.0.4] - 2026-07-25
 
 ### Fixed

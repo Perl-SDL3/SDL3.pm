@@ -3364,8 +3364,6 @@ See F<eg/hello_world.pl> for an example and L<SDL3: CategoryMain|https://wiki.li
         if ( $^O eq 'MSWin32' ) {
             _affix_and_export SDL_RegisterApp        => [ String, UInt32, Pointer [Void] ], Bool;
             _affix_and_export SDL_UnregisterApp      => [], Void;
-            _affix_and_export SDL_GDKRunApp          => [], Void;
-            _affix_and_export SDL_GDKRunApp          => [ SDL_main_func(), Pointer [Void] ], Int;
             _affix_and_export SDL_GDKSuspendComplete => [], Void;
         }
     }
