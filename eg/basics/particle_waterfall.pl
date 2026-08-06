@@ -321,9 +321,5 @@ sub hsv_to_rgb ( $h, $s, $v ) {    # H [0-360], S [0-1], V [0-1] -> (0-255, 0-25
     else               { ( $r, $g, $b ) = ( $c, 0, $x ) }
     int( ( $r + $m ) * 255 ), int( ( $g + $m ) * 255 ), int( ( $b + $m ) * 255 );
 }
-Affix::free($ptr_x);
-Affix::free($ptr_y);
-Affix::free($event_ptr);
-if ( $Z_STRATEGY eq 'x11' ) { Affix::free($root_ret); Affix::free($parent_ret); Affix::free($children_ptr); Affix::free($nchildren); }
 for my $ctx (@contexts) { SDL_DestroyRenderer( $ctx->{ren} ); SDL_DestroyWindow( $ctx->{win} ); }
 SDL_Quit();

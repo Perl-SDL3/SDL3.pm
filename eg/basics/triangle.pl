@@ -84,7 +84,6 @@ while ($running) {
     # Simple frame limiter
     SDL_Delay(16);
 }
-Affix::free($event_ptr);
 SDL_DestroyRenderer($ren);
 SDL_DestroyWindow($win);
 SDL_Quit();
