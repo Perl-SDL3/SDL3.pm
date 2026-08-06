@@ -11,7 +11,7 @@ my $MAP_SIZE = 12;
 # SDL_RenderGeometry requires a buffer for vertices
 my $quad_verts = Affix::calloc( 6, sizeof(SDL_Vertex) );
 my $qv_addr    = Affix::address($quad_verts);
-my $QV_STRIDE  = sizeof(SDL_Vertex);    # 32 bytes
+my $QV_STRIDE  = sizeof(SDL_Vertex);                       # 32 bytes
 
 # Pinned float views for fast direct writes into the vertex buffer
 my ( @qv_px, @qv_py, @qv_r, @qv_g, @qv_b, @qv_a );
@@ -180,6 +180,7 @@ sub draw_poly {
         return unless defined $sx;                    # Clip if any point is behind camera
         push @screen_pts, [ $sx, $sy ];
     }
+
     # Construct Vertex Buffer for 2 Triangles (1 Quad)
     # 0, 1, 2, 0, 2, 3
     my @indices = ( 0, 1, 2, 0, 2, 3 );
@@ -438,7 +439,6 @@ while ($running) {
     SDL_RenderPresent($ren);
     SDL_Delay(16);
 }
-
 SDL_DestroyRenderer($ren);
 SDL_DestroyWindow($win);
 SDL_Quit();

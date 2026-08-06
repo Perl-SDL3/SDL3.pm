@@ -21,7 +21,7 @@ my $SCREEN_W = $COLS * $FONT_W * $SCALE;
 my $SCREEN_H = $ROWS * $FONT_H * $SCALE;
 
 # Init
-die SDL_GetError() if SDL_Init(SDL_INIT_VIDEO) == 0 ;
+die SDL_GetError() if SDL_Init(SDL_INIT_VIDEO) == 0;
 my $win       = SDL_CreateWindow( 'Just Another Perl Matrix,', $SCREEN_W, $SCREEN_H, 0 );
 my $ren       = SDL_CreateRenderer( $win, undef );
 my $event_ptr = Affix::malloc(128);
@@ -88,9 +88,8 @@ $$src_w = 8;
 $$src_h = 8;
 $$dst_w = $FONT_W * $SCALE;
 $$dst_h = $FONT_H * $SCALE;
-
-my $running  = 1;
-my $frame    = 0;
+my $running = 1;
+my $frame   = 0;
 while ($running) {
     while ( SDL_PollEvent($event_ptr) ) {
         if ( Affix::cast( $event_ptr, SDL_CommonEvent )->{type} == SDL_EVENT_QUIT ) { $running = 0; }

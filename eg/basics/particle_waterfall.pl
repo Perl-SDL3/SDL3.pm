@@ -129,8 +129,12 @@ sub update_z_win32 {
 }
 
 # Helpers for XQueryTree
-my ( $root_ret, $parent_ret, $children_ptr, $nchildren )
-    = ( Affix::calloc( 1, sizeof(ULong) ), Affix::calloc( 1, sizeof(ULong) ), Affix::calloc( 1, sizeof(Pointer [Void]) ), Affix::calloc( 1, sizeof(UInt) ) );
+my ( $root_ret, $parent_ret, $children_ptr, $nchildren ) = (
+    Affix::calloc( 1, sizeof(ULong) ),
+    Affix::calloc( 1, sizeof(ULong) ),
+    Affix::calloc( 1, sizeof( Pointer [Void] ) ),
+    Affix::calloc( 1, sizeof(UInt) )
+);
 
 sub update_z_x11 {
     if ( XQueryTree( $dpy, $root, $root_ret, $parent_ret, $children_ptr, $nchildren ) ) {

@@ -38,9 +38,9 @@ die SDL_GetError() unless SDL_Init(SDL_INIT_VIDEO);
 my $win        = SDL_CreateWindow( 'Just Another Perl Tycoon, ', $SCREEN_W, $SCREEN_H, 0 );
 my $ren        = SDL_CreateRenderer( $win, undef );
 my $event_ptr  = Affix::malloc(128);
-my $quad_verts = Affix::calloc( 6, sizeof(SDL_Vertex) );    # Persistent buffer
+my $quad_verts = Affix::calloc( 6, sizeof(SDL_Vertex) );                                      # Persistent buffer
 my $qv_addr    = Affix::address($quad_verts);
-my $QV_STRIDE  = sizeof(SDL_Vertex);                        # 32 bytes
+my $QV_STRIDE  = sizeof(SDL_Vertex);                                                          # 32 bytes
 
 # Pinned float views for fast direct writes into the vertex buffer
 my ( @qv_px, @qv_py, @qv_r, @qv_g, @qv_b, @qv_a );
