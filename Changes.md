@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+I'm going to bundle all the demos I had hidden away on github to the main SDL3 dist. Maybe someone will actually use this if finding working examples was easier...
+
+### Added
+
+- `eg/audio/polysynth.pl` - a simple polyphonic synthesizer
+- `eg/basics/boids.pl` - an [artificial life algotithm](https://en.wikipedia.org/wiki/Boids)
+
 ### Fixed
 
 - `SDL_AppEvent` callback prototype to expect a pointer to an `SDL_Event`.
 
 ### Removed
+
 - `SDL_GDKRunApp` and `SDL_UIKitRunApp` have been deprecated upstream (use `SDL_RunApp` instead).
 
 ## [v0.0.4] - 2026-07-25
@@ -45,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## News
 
-  - Initial release
+  - It exists!
 
 [Unreleased]: https://github.com/Perl-SDL3/SDL3.pm/compare/v0.0.4...HEAD
 [v0.0.4]: https://github.com/Perl-SDL3/SDL3.pm/compare/v0.0.3...v0.0.4
