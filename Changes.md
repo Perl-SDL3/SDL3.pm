@@ -22,6 +22,7 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 - `eg/games/meteors.pl` - a simple meteor-dodging game
 - `eg/games/raycaster_maze.pl` - a "Duke Nukem style" raycaster maze
 - `eg/games/safe_cracker.pl` - crack a combination safe with gamepad haptics
+- `eg/games/scalar_sprint.pl` - a platformer demonstrating gamepad support
 
 ### Fixed
 
