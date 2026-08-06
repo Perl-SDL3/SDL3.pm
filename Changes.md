@@ -23,6 +23,7 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 - `eg/games/raycaster_maze.pl` - a "Duke Nukem style" raycaster maze
 - `eg/games/safe_cracker.pl` - crack a combination safe with gamepad haptics
 - `eg/games/scalar_sprint.pl` - a platformer demonstrating gamepad support
+- `eg/games/simulation.pl` - a 3D "Sims" demo with A* pathfinding, mouse picking, and a Vulkan renderer
 
 ### Fixed
 
