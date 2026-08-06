@@ -20,6 +20,7 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 - `eg/basics/particle_waterfall.pl` - particles that flow between overlapping windows via their OS z-order
 - `eg/games/2.5d_map.pl` - an isometric map toy (a "Perl Tycoon" work in progress)
 - `eg/games/meteors.pl` - a simple meteor-dodging game
+- `eg/games/raycaster_maze.pl` - a "Duke Nukem style" raycaster maze
 
 ### Fixed
 
