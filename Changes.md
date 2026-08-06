@@ -17,6 +17,7 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 - `eg/basics/matrix.pl` - the Matrix "digital rain" rendered with a procedurally generated glyph atlas
 - `eg/basics/message_box.pl` - native message boxes via `SDL_ShowMessageBox` and `SDL_ShowSimpleMessageBox`
 - `eg/basics/triangle.pl` - a spinning triangle via `SDL_RenderGeometry`
+- `eg/basics/particle_waterfall.pl` - particles that flow between overlapping windows via their OS z-order
 
 ### Fixed
 
