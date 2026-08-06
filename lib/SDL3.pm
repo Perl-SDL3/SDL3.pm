@@ -1,4 +1,4 @@
-package SDL3 v0.0.4 {
+package SDL3 v0.0.5 {
     use v5.40;
     use base 'Exporter';
     use Affix qw[:all];
@@ -2627,7 +2627,7 @@ See L<SDL3: CategoryInit|https://wiki.libsdl.org/SDL3/CategoryInit>
         _enum_and_export SDL_AppResult => [ [ SDL_APP_CONTINUE => 0 ], [ SDL_APP_SUCCESS => 1 ], [ SDL_APP_FAILURE => 2 ] ];
         _typedef_and_export SDL_AppInit_func    => Callback [ [ Pointer [ Pointer [Void] ], Int, Pointer [String] ] => SDL_AppResult() ];
         _typedef_and_export SDL_AppIterate_func => Callback [ [ Pointer [Void] ]                                    => SDL_AppResult() ];
-        _typedef_and_export SDL_AppEvent_func   => Callback [ [ Pointer [Void], SDL_Event() ]                       => SDL_AppResult() ];
+        _typedef_and_export SDL_AppEvent_func   => Callback [ [ Pointer [Void], Pointer [ SDL_Event() ] ]           => SDL_AppResult() ];
         _typedef_and_export SDL_AppQuit_func    => Callback [ [ Pointer [Void], SDL_AppResult() ]                   => Void ];
         _affix_and_export SDL_Init          => [ SDL_InitFlags() ], Bool;
         _affix_and_export SDL_InitSubSystem => [ SDL_InitFlags() ], Bool;
