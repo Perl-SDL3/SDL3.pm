@@ -21,6 +21,7 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 - `eg/games/2.5d_map.pl` - an isometric map toy (a "Perl Tycoon" work in progress)
 - `eg/games/meteors.pl` - a simple meteor-dodging game
 - `eg/games/raycaster_maze.pl` - a "Duke Nukem style" raycaster maze
+- `eg/games/safe_cracker.pl` - crack a combination safe with gamepad haptics
 
 ### Fixed
 
