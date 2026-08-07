@@ -24,6 +24,7 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 - `eg/games/safe_cracker.pl` - crack a combination safe with gamepad haptics
 - `eg/games/scalar_sprint.pl` - a platformer demonstrating gamepad support
 - `eg/games/space_invaders.pl` - space invaders with procedurally generated sprite assets
+- `eg/games/tetris.pl` - classic tetromino stacking with score, next-piece preview and landing shadow
 - `eg/gpu/hello_world.pl` - a raw GPU swapchain clear-to-color demo proving the render pipeline works
 
 ### Fixed
