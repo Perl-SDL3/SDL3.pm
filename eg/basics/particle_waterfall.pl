@@ -1,3 +1,10 @@
+
+=pod
+
+=for html <center><img src="https://raw.githubusercontent.com/Perl-SDL3/.github/refs/heads/main/screenshots/particle_waterfall.gif" /></center>
+
+=cut
+
 use v5.36;
 use Affix qw[:all];
 use SDL3  qw[:all];

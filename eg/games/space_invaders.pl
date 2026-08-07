@@ -243,20 +243,20 @@ while ($running) {
     for my $e (@enemies) {
         next unless $e->{alive};
         my $idx = ( $e->{type} * 2 ) + $frame;
-        set_rect( \@sr, $idx * 32, 0, 32, 32 );
-        set_rect( \@dr, $e->{x}, $e->{y}, 32, 32 );
+        set_rect( \@sr, $idx * 32, 0,       32, 32 );
+        set_rect( \@dr, $e->{x},   $e->{y}, 32, 32 );
         SDL_RenderTexture( $ren, $tex, $src_rect, $dst_rect );
     }
 
     # Draw player (index 6)
-    set_rect( \@sr, 6 * 32, 0, 32, 32 );
+    set_rect( \@sr, 6 * 32,       0,            32, 32 );
     set_rect( \@dr, $player->{x}, $player->{y}, 32, 32 );
     SDL_RenderTexture( $ren, $tex, $src_rect, $dst_rect );
 
     # Draw bullets (index 7)
     for my $b (@bullets) {
         next unless $b->{active};
-        set_rect( \@sr, 7 * 32, 0, 32, 32 );
+        set_rect( \@sr, 7 * 32,       0,       32, 32 );
         set_rect( \@dr, $b->{x} - 12, $b->{y}, 32, 32 );    # Center the 32px sprite
         SDL_RenderTexture( $ren, $tex, $src_rect, $dst_rect );
     }

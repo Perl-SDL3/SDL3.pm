@@ -1,3 +1,10 @@
+
+=pod
+
+=for html <center><img src="https://raw.githubusercontent.com/Perl-SDL3/.github/refs/heads/main/screenshots/tetris.gif" /></center>
+
+=cut
+
 use v5.40;
 use SDL3 qw[:all :main];
 
@@ -9,12 +16,11 @@ use SDL3 qw[:all :main];
 #  - Left/Right to move, Down for soft drop
 #  - Up to rotate, Space to hard drop
 #  - P to pause, R to restart (on game over)
-
 # Game Constants
-use constant GRID_W   => 10;
-use constant GRID_H   => 20;
-use constant CELL     => 24;
-use constant SIDEBAR  => 160;
+use constant GRID_W    => 10;
+use constant GRID_H    => 20;
+use constant CELL      => 24;
+use constant SIDEBAR   => 160;
 use constant NEXT_CELL => 18;
 my ( $window, $renderer );
 my @grid;    # [y][x]
@@ -27,30 +33,29 @@ my $paused    = 0;
 
 # Tetrominoes: [Shape][Rotation][y][x] with matching colors
 my @shapes = (
-    [ [ [ 1, 1, 1, 1 ] ], [ [1], [1], [1], [1] ] ],                                        # I
-    [ [ [ 1, 1 ], [ 1, 1 ] ] ],                                                            # O
+    [ [ [ 1, 1, 1, 1 ] ], [ [1], [1], [1], [1] ] ],                                                                                        # I
+    [ [ [ 1, 1 ], [ 1, 1 ] ] ],                                                                                                            # O
     [ [ [ 0, 1, 0 ], [ 1, 1, 1 ] ], [ [ 1, 0 ], [ 1, 1 ], [ 1, 0 ] ], [ [ 1, 1, 1 ], [ 0, 1, 0 ] ], [ [ 0, 1 ], [ 1, 1 ], [ 0, 1 ] ] ],    # T
-    [ [ [ 0, 1, 1 ], [ 1, 1, 0 ] ], [ [ 1, 0 ], [ 1, 1 ], [ 0, 1 ] ] ],                    # S
-    [ [ [ 1, 1, 0 ], [ 0, 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ], [ 1, 0 ] ] ],                    # Z
+    [ [ [ 0, 1, 1 ], [ 1, 1, 0 ] ], [ [ 1, 0 ], [ 1, 1 ], [ 0, 1 ] ] ],                                                                    # S
+    [ [ [ 1, 1, 0 ], [ 0, 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ], [ 1, 0 ] ] ],                                                                    # Z
     [ [ [ 1, 0, 0 ], [ 1, 1, 1 ] ], [ [ 1, 1 ], [ 1, 0 ], [ 1, 0 ] ], [ [ 1, 1, 1 ], [ 0, 0, 1 ] ], [ [ 0, 1 ], [ 0, 1 ], [ 1, 1 ] ] ],    # J
-    [ [ [ 0, 0, 1 ], [ 1, 1, 1 ] ], [ [ 1, 0 ], [ 1, 0 ], [ 1, 1 ] ], [ [ 1, 1, 1 ], [ 1, 0, 0 ] ], [ [ 1, 1 ], [ 0, 1 ], [ 0, 1 ] ] ]    # L
+    [ [ [ 0, 0, 1 ], [ 1, 1, 1 ] ], [ [ 1, 0 ], [ 1, 0 ], [ 1, 1 ] ], [ [ 1, 1, 1 ], [ 1, 0, 0 ] ], [ [ 1, 1 ], [ 0, 1 ], [ 0, 1 ] ] ]     # L
 );
 my @shape_colors = (
-    [ 0, 240, 240 ],    # I
-    [ 240, 240, 0 ],    # O
-    [ 160, 0, 240 ],    # T
-    [ 0, 240, 0 ],      # S
-    [ 240, 0, 0 ],      # Z
-    [ 0, 0, 240 ],      # J
-    [ 240, 160, 0 ]    # L
+    [ 0,   240, 240 ],                                                                                                                     # I
+    [ 240, 240, 0 ],                                                                                                                       # O
+    [ 160, 0,   240 ],                                                                                                                     # T
+    [ 0,   240, 0 ],                                                                                                                       # S
+    [ 240, 0,   0 ],                                                                                                                       # Z
+    [ 0,   0,   240 ],                                                                                                                     # J
+    [ 240, 160, 0 ]                                                                                                                        # L
 );
 
 sub spawn_piece {
-    $next_idx = int( rand(@shapes) ) unless defined $next_idx;
-    $current_piece
-        = { shape => $shapes[$next_idx], rot => 0, x => int( GRID_W / 2 ) - 1, y => 0, color => $shape_colors[$next_idx] };
-    $next_idx = int( rand(@shapes) );
-    $game_over = 1 if check_collision( $current_piece, 0, 0 );
+    $next_idx      = int( rand(@shapes) ) unless defined $next_idx;
+    $current_piece = { shape => $shapes[$next_idx], rot => 0, x => int( GRID_W / 2 ) - 1, y => 0, color => $shape_colors[$next_idx] };
+    $next_idx      = int( rand(@shapes) );
+    $game_over     = 1 if check_collision( $current_piece, 0, 0 );
 }
 
 sub check_collision ( $piece, $dx, $dy, $dr = 0 ) {
@@ -72,10 +77,10 @@ sub check_collision ( $piece, $dx, $dy, $dr = 0 ) {
     return 0;
 }
 
-sub drop_distance ($piece){
+sub drop_distance ($piece) {
     my $dy = 0;
     $dy++ while !check_collision( $piece, 0, $dy + 1 );
-    $dy
+    $dy;
 }
 
 sub lock_piece {
@@ -103,7 +108,7 @@ sub lock_piece {
 }
 
 sub restart {
-    @grid = map { [ (undef) x GRID_W ] } ( 1 .. GRID_H );
+    @grid      = map { [ (undef) x GRID_W ] } ( 1 .. GRID_H );
     $score     = 0;
     $game_over = 0;
     $paused    = 0;
@@ -187,12 +192,13 @@ sub SDL_AppIterate ($appstate) {
     # Next Piece Preview
     SDL_SetRenderDrawColor( $renderer, 60, 60, 60, 255 );
     SDL_RenderRect( $renderer, { x => $sx + 16, y => 36, w => 128, h => 96 } );
-    my $matrix  = $shapes[$next_idx][0];
-    my $mw      = scalar( @{ $matrix->[0] } );
-    my $mh      = scalar(@$matrix);
-    my $off_x   = int( ( 128 - $mw * NEXT_CELL ) / 2 );
-    my $off_y   = int( ( 96 - $mh * NEXT_CELL ) / 2 );
+    my $matrix = $shapes[$next_idx][0];
+    my $mw     = scalar( @{ $matrix->[0] } );
+    my $mh     = scalar(@$matrix);
+    my $off_x  = int( ( 128 - $mw * NEXT_CELL ) / 2 );
+    my $off_y  = int( ( 96 - $mh * NEXT_CELL ) / 2 );
     SDL_SetRenderDrawColor( $renderer, @{ $shape_colors[$next_idx] }, 255 );
+
     for my $y ( 0 .. $mh - 1 ) {
         for my $x ( 0 .. $mw - 1 ) {
             next unless $matrix->[$y][$x];
@@ -205,14 +211,12 @@ sub SDL_AppIterate ($appstate) {
     SDL_SetRenderDrawColor( $renderer, 230, 230, 230, 255 );
     SDL_RenderDebugText( $renderer, $sx + 16, 160, 'SCORE' );
     SDL_RenderDebugText( $renderer, $sx + 16, 182, "$score" );
-
-    if ( $paused ) {
+    if ($paused) {
         SDL_SetRenderDrawColor( $renderer, 230, 230, 230, 255 );
         SDL_RenderDebugText( $renderer, 60, 200, 'PAUSED' );
         SDL_RenderDebugText( $renderer, 60, 222, 'Press P to resume' );
     }
-
-    if ( $game_over ) {
+    if ($game_over) {
         SDL_SetRenderDrawColor( $renderer, 230, 60, 60, 255 );
         SDL_RenderDebugText( $renderer, 60, 200, 'GAME OVER' );
         SDL_SetRenderDrawColor( $renderer, 230, 230, 230, 255 );

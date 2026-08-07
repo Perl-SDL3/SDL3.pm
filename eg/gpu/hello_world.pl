@@ -22,7 +22,7 @@ my $event_ptr = Affix::malloc(128);
 my $running   = 1;
 
 # Pointers for Swapchain acquisition
-my $ptr_tex = Affix::calloc( 1, sizeof(Pointer [Void]) );
+my $ptr_tex = Affix::calloc( 1, sizeof( Pointer [Void] ) );
 my $ptr_w   = Affix::calloc( 1, sizeof(UInt32) );
 my $ptr_h   = Affix::calloc( 1, sizeof(UInt32) );
 #

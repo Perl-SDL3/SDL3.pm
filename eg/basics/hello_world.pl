@@ -1,5 +1,5 @@
 use v5.40;
-use lib '../lib';
+use lib '../../lib';
 use SDL3 qw[:all :main];
 $|++;
 #

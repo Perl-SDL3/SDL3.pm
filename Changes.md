@@ -26,6 +26,10 @@ I'm going to bundle all the demos I had hidden away on github to the main SDL3 d
 - `eg/games/space_invaders.pl` - space invaders with procedurally generated sprite assets
 - `eg/games/tetris.pl` - classic tetromino stacking with score, next-piece preview and landing shadow
 - `eg/gpu/hello_world.pl` - a raw GPU swapchain clear-to-color demo proving the render pipeline works
+- `eg/renderer/starfield.pl` - an animated starfield drawn via `SDL_RenderPoints`
+- Here's a few screenshots:
+ - ![https://raw.githubusercontent.com/Perl-SDL3/.github/refs/heads/main/screenshots/tetris.gif]
+ - ![https://raw.githubusercontent.com/Perl-SDL3/.github/refs/heads/main/screenshots/particle_waterfall.gif]
 
 ### Fixed
 
