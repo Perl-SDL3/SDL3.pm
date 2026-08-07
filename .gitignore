@@ -24,6 +24,8 @@ cover_db/
 
 MYMETA.*
 
+/screenshots/
+/tools/
 /SDL3-*
 
 .tidyall.d/
@@ -41,3 +43,5 @@ MANIFEST
 
 pod2htmd.tmp
 SDL3.html
+
+*.ps1
