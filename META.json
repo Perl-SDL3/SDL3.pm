@@ -115,7 +115,7 @@
          "version" : "v0.0.5"
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/Perl-SDL3/SDL3.pm/issues"
