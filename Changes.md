@@ -5,6 +5,11 @@ All notable changes to SDL.pm will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `eg/basics/rope.pl` - a port of [rope-jai](https://github.com/tsoding/rope-jai/tree/master)
+
 ## [v0.0.5] - 2026-08-07
 
 I'm going to bundle all the demos I had hidden away on github to the main SDL3 dist. Maybe someone will actually use this if finding working examples was easier...
