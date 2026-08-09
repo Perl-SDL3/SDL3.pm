@@ -32,14 +32,14 @@ class Vector2 {
     field $x : param : reader : writer //= 0;
     field $y : param : reader : writer //= 0;
     #
-    method length () { sqrt( $self->x**2 + $self->y**2 ) }
-    method plus   ($other)  { Vector2->new( x => $self->x + $other->x, y => $self->y + $other->y ) }
-    method minus  ($other)  { Vector2->new( x => $self->x - $other->x, y => $self->y - $other->y ) }
-    method scaled ($factor) { Vector2->new( x => $self->x * $factor,   y => $self->y * $factor ) }
+    method length () { sqrt( $x**2 + $y**2 ) }
+    method plus   ($other)  { Vector2->new( x => $x + $other->x, y => $y + $other->y ) }
+    method minus  ($other)  { Vector2->new( x => $x - $other->x, y => $y - $other->y ) }
+    method scaled ($factor) { Vector2->new( x => $x * $factor,   y => $y * $factor ) }
 
     method move ( $dx, $dy ) {
-        $self->set_x( $self->x + $dx );
-        $self->set_y( $self->y + $dy );
+        $x += $dx;
+        $y += $dy;
     }
 }
 
@@ -80,7 +80,7 @@ sub compute_tail_velocity ( $head, $tail ) {
     my $len   = $delta->length || 1;
     return Vector2->new(
         x => ( $head->x + ( $delta->x / $len ) * TARGET_DISTANCE - $tail->x ) * ELASTICITY,
-        y => ( $head->y + ( $delta->y / $len ) * TARGET_DISTANCE - $tail->y ) * ELASTICITY,
+        y => ( $head->y + ( $delta->y / $len ) * TARGET_DISTANCE - $tail->y ) * ELASTICITY
     );
 }
 #
