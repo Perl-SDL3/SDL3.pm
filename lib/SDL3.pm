@@ -4429,7 +4429,8 @@ See L<SDL3: CategoryRender|https://wiki.libsdl.org/SDL3/CategoryRender>
         #~ ],
         #~ Bool;
         _affix_and_export
-            SDL_RenderGeometry => [ Pointer [ SDL_Renderer() ], Pointer [ SDL_Texture() ], Pointer [ SDL_Vertex() ], Int, Pointer [Int], Int ],
+            SDL_RenderGeometry =>
+            [ Const [Pointer [ SDL_Renderer() ]],Const [ Pointer [ SDL_Texture()] ], Const [ Pointer [ SDL_Vertex() ] ], Int, Const [ Pointer [Int] ], Int ],
             Bool;
         _affix_and_export
             SDL_RenderGeometryRaw => [
