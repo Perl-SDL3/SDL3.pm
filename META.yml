@@ -5,7 +5,7 @@ author:
   - 'Sanko Robinson <sanko@cpan.org>'
 build_requires:
   Affix: v1.1.0
-  Alien::SDL3: v2.24.0
+  Alien::Xrepo: '0'
   IPC::Cmd: '0'
   TAP::Harness::Env: '0'
   Test2::Plugin::UTF8: '0'
@@ -23,6 +23,7 @@ configure_requires:
   File::Spec::Functions: '0'
   Getopt::Long: '2.36'
   JSON::PP: '2'
+  Module::Build: '0'
   Path::Tiny: '0.144'
 dynamic_config: 0
 generated_by: 'App::mii v1.0.0, CPAN::Meta::Converter version 2.150013'
@@ -54,7 +55,6 @@ provides:
     version: v0.0.5
 requires:
   Affix: v1.1.0
-  Alien::SDL3: v2.24.0
   Carp: '0'
   Data::Dump: '0'
   perl: v5.40.0

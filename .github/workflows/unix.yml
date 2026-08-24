@@ -19,25 +19,27 @@ jobs:
         run: |
           \curl -L https://install.perlbrew.pl | bash
           source ~/perl5/perlbrew/etc/bashrc
-          
+
           perlbrew self-upgrade
           perlbrew install-patchperl
           perlbrew available
           perlbrew install-cpanm
           cpanm --local-lib=~/perl5 local::lib && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
           cpanm -n -v Devel::PatchPerl
-          
+
           perlbrew install --switch --verbose --as cache-${{ inputs.os }}-${{ inputs.perl }}${{ inputs.flags }} -j 12 --notest --noman ${{ inputs.flags }} perl-${{ inputs.perl }}
       - name: Install prereqs
         run: |
           if [[ $(uname -o) == GNU/Linux ]]; then
             sudo apt-get update -y
             sudo apt-get install -y valgrind libatomic1 libwayland-dev libxext-dev libxinerama-dev libxrandr-dev libxss-dev libxkbcommon-dev libxtst-dev libxv-dev libxxf86vm-dev libdbus-1-dev libudev-dev libgles2-mesa-dev libegl1-mesa-dev libgl1-mesa-dev libibus-1.0-dev libpulse-dev libsamplerate0-dev libsndio-dev libpipewire-0.3-dev libdecor-0-dev libxcursor-dev
-          
           fi
           source ~/perl5/perlbrew/etc/bashrc
           perlbrew switch cache-${{ inputs.os }}-${{ inputs.perl }}${{ inputs.flags }}
           cpanm --installdeps --notest --with-suggests --with-recommends --with-configure -v .
+          perl -e 'use HTTP::Tiny; use Data::Dumper; warn Dumper(HTTP::Tiny->new->mirror(q[https://github.com/xmake-io/xmake/releases/download/v3.1.0/xmake-bundle-v3.1.0.cosmocc], q[xmake-bundle-v3.1.0.cosmocc]))'
+          chmod 0755 xmake-bundle-v3.1.0.cosmocc
+          ./xmake-bundle-v3.1.0.cosmocc --help
         shell: bash
       - env:
           AUTHOR_TESTING: 0

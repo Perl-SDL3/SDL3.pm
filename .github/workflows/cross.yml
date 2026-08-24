@@ -28,8 +28,11 @@ jobs:
             ${{ inputs.setup }}
             sudo ${{inputs.pkg}} perl5 xorg wayland libxkbcommon dbus mesa-libs ibus pulseaudio libsamplerate sndio pipewire libdecor
             perl -v
-            curl -L https://cpanmin.us | sudo perl - --notest App::cpanminus Module::Build::Tiny
-            sudo cpanm --installdeps --notest .
+            curl -L https://cpanmin.us | sudo perl - --notest App::cpanminus Module::Build::Tiny IO::Socket::SSL
+            perl -e 'use HTTP::Tiny; use Data::Dumper; warn Dumper(HTTP::Tiny->new->mirror(q[https://github.com/xmake-io/xmake/releases/download/v3.1.0/xmake-bundle-v3.1.0.cosmocc], q[xmake-bundle-v3.1.0.cosmocc]))'
+            chmod 0755 xmake-bundle-v3.1.0.cosmocc
+            ./xmake-bundle-v3.1.0.cosmocc --help
+            sudo cpanm --installdeps --notest --verbose .
             sudo cpanm --test-only -v .
             command1_exit_code=$?
             # Check if the first command exited successfully (exit code 0)
