@@ -1,152 +1,422 @@
 ---
 jobs:
-  etc:
-    name: 'FreeBSD/v${{matrix.perl}}'
-    needs:
-      - setup
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - architecture: x86-64
-            host: ubuntu-latest
-            name: freebsd
-            pkg: pkg install -y
-            version: 14.1
-          - architecture: arm64
-            host: ubuntu-latest
-            name: freebsd
-            pkg: pkg install -y
-            version: 14.1
-        perl:
-          - 5.40
-      max-parallel: 5
-    uses: ./.github/workflows/cross.yml
+  dragonflybsd:
+    name: DragonFly BSD
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
     with:
-      arch: '${{ matrix.os.architecture }}'
-      host: '${{ matrix.os.host }}'
-      os: '${{ matrix.os.name }}'
-      perl: '${{ matrix.perl }}'
-      pkg: '${{ matrix.os.pkg }}'
-      setup: '${{ matrix.os.setup }}'
-      version: '${{ matrix.os.version }}'
+      matrix: |
+        [
+          {"platform_name":"dragonflybsd","os":"dragonflybsd","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg update && pkg upgrade -y && pkg install -y perl5 gcc curl gmake libunistring git cmake ninja unzip pkgconf && (pkg install -y libX11 libxcb libXext libXfixes libXcursor libXrandr libXi libXrender libXScrnSaver libxkbcommon wayland xorgproto || echo 'note: some X11 development packages are unavailable in dports')"}
+        ]
+      os_version: 6.4.0
+      task: |
+        perl -V
+        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
+        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
+        #~ install aborts the whole run even though it succeeded. cpanm lands in
+        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
+        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
+        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
+        perl /tmp/cpanmin.pl App::cpanminus
+        rm -f /tmp/cpanmin.pl
+        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
+        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
+        #~ the real gcc when there is no /usr/bin/cc.
+        gcc_path=$(command -v gcc 2>/dev/null || true)
+        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
+        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
+        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
+        command -v cpanm
+        export XMAKE_ROOT=y
+        cpanm --notest IO::Socket::SSL
+        cpanm -v --with-recommends .
+  freebsd:
+    name: FreeBSD
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
+    with:
+      matrix: |
+        [
+          {"platform_name":"freebsd","os":"freebsd","arch":"x86_64","toolchain":"gcc","prepare":"pkg install -y perl5 lang/gcc libX11 libxcb libXext libXfixes libXcursor libXrandr libXi libXrender libXScrnSaver libxkbcommon wayland xorgproto pkgconf curl gmake git cmake ninja unzip"},
+          {"platform_name":"freebsd","os":"freebsd","arch":"x86_64","toolchain":"clang","prepare":"pkg install -y perl5 llvm libX11 libxcb libXext libXfixes libXcursor libXrandr libXi libXrender libXScrnSaver libxkbcommon wayland xorgproto pkgconf curl gmake git cmake ninja unzip"}
+        ]
+      os_version: 15.0
+      task: |
+        perl -V
+        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
+        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
+        #~ install aborts the whole run even though it succeeded. cpanm lands in
+        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
+        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
+        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
+        perl /tmp/cpanmin.pl App::cpanminus
+        rm -f /tmp/cpanmin.pl
+        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
+        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
+        #~ the real gcc when there is no /usr/bin/cc.
+        gcc_path=$(command -v gcc 2>/dev/null || true)
+        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
+        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
+        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
+        command -v cpanm
+        export XMAKE_ROOT=y
+        cpanm --notest IO::Socket::SSL
+        cpanm -v --with-recommends .
   linux:
-    name: 'Linux/v${{matrix.perl}}'
-    needs:
-      - setup
-    strategy:
-      fail-fast: false
-      matrix:
-        flags: '${{ fromJSON(needs.setup.outputs.matrix).flags }}'
-        os:
-          - ubuntu-24.04
-        perl: '${{ fromJSON(needs.setup.outputs.matrix).perl }}'
-      max-parallel: 25
-    uses: ./.github/workflows/unix.yml
+    name: Linux
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
     with:
-      flags: '${{ matrix.flags }}'
-      os: '${{ matrix.os }}'
-      perl: '${{ matrix.perl }}'
+      matrix: |
+        [
+          {"platform_name":"ubuntu","os":"ubuntu-latest","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5"},
+          {"platform_name":"ubuntu","os":"ubuntu-latest","arch":"x86_64","toolchain":"gcc","perl_version":"5.42.3","configure":"-Duselongdouble","variant":"longdoubles"},
+          {"platform_name":"ubuntu-arm","os":"ubuntu-24.04-arm","arch":"aarch64","toolchain":"gcc","perl_version":"5.40.5"},
+          {"platform_name":"ubuntu","os":"ubuntu-latest","arch":"x86_64","toolchain":"clang","perl_version":"5.40.5"},
+          {"platform_name":"ubuntu-arm","os":"ubuntu-24.04-arm","arch":"aarch64","toolchain":"clang","perl_version":"5.40.5"}
+        ]
+      task: |
+        perl -V
+        #~ Required, not best-effort: recipes/packages/l/libsdl3/xmake.lua raises
+        #~ before configuring cmake unless all of these X11/Wayland headers are
+        #~ present, on the grounds that bootstrapping the X11 stack from source has
+        #~ wedged CI for hours. cmake/ninja/pkgconf let the from-source family build
+        #~ against the system tooling instead of xmake bootstrapping its own.
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends cmake ninja-build pkgconf curl \
+          libx11-dev libxcb1-dev libxext-dev libxfixes-dev libxcursor-dev libxrandr-dev \
+          libxi-dev libxrender-dev libxss-dev libxkbcommon-dev libwayland-dev
+        #~ What the from-source image/mixer/ttf builds link against. Best-effort: the
+        #~ local build still has to pass on a distro that does not ship one of these.
+        sudo apt-get install -y --no-install-recommends \
+          libpng-dev libjpeg-dev libtiff-dev libwebp-dev libfreetype6-dev \
+          libogg-dev libvorbis-dev libflac-dev libopus-dev libopusfile-dev \
+          libsndfile1-dev libasound2-dev libpulse-dev libpipewire-0.3-dev \
+          libudev-dev libdbus-1-dev libgl1-mesa-dev libegl1-mesa-dev \
+          libibus-1.0-dev zlib1g-dev libbz2-dev \
+          || echo 'note: some codec/audio development packages are missing'
+        #~ Install cpanm via its canonical self-bootstrap (installs the real
+        #~ `cpanm` binary into the active perl's bin dir). `command -v cpanm`
+        #~ is a hard fail point that catches any no-op.
+        curl -L https://cpanmin.us | perl - App::cpanminus
+        command -v cpanm
+        cpanm -v --with-recommends .
   macos:
-    name: "[${{ matrix.os == 'macos-15-intel' && 'Intel' || 'M1' }}] macOS/v${{matrix.perl}}"
-    needs:
-      - setup
-    strategy:
-      fail-fast: false
-      matrix:
-        exclude:
-          - flags: -Dusequadmath
-          - flags: -Dusethreads
-        flags: '${{ fromJSON(needs.setup.outputs.matrix).flags }}'
-        os:
-          - macos-15-intel
-          - macos-15
-        perl: '${{ fromJSON(needs.setup.outputs.matrix).perl }}'
-      max-parallel: 25
-    uses: ./.github/workflows/unix.yml
+    name: macOS
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
     with:
-      flags: '${{ matrix.flags }}'
-      os: '${{ matrix.os }}'
-      perl: '${{ matrix.perl }}'
+      matrix: |
+        [
+          {"platform_name":"macos","os":"macos-15","arch":"aarch64","toolchain":"gcc","perl_version":"5.42.3"},
+          {"platform_name":"macos-intel","os":"macos-15-intel","arch":"x86_64","toolchain":"gcc","perl_version":"5.42.3"},
+          {"platform_name":"macos","os":"macos-15","arch":"aarch64","toolchain":"clang","perl_version":"5.42.3"},
+          {"platform_name":"macos-intel","os":"macos-15-intel","arch":"x86_64","toolchain":"clang","perl_version":"5.42.3"}
+        ]
+      task: |
+        perl -V
+        #~ Install cpanm via its canonical self-bootstrap (installs the real
+        #~ `cpanm` binary into the active perl's bin dir). `command -v cpanm`
+        #~ is a hard fail point that catches any no-op.
+        curl -L https://cpanmin.us | perl - App::cpanminus
+        command -v cpanm
+        cpanm -v --with-recommends .
+  netbsd:
+    name: NetBSD
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
+    with:
+      matrix: |
+        [
+          {"platform_name":"netbsd","os":"netbsd","arch":"x86_64","toolchain":"gcc","prepare":"export PKG_PATH=https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/10.0/All; /usr/sbin/pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf"}
+        ]
+      os_version: 10.1
+      task: |
+        #~ Perl comes from pkgsrc, not from the base system, so put /usr/pkg/bin
+        #~ in front before anything looks for perl. The image's login PATH
+        #~ already carries that directory; this only makes the dependency
+        #~ explicit for anything that re-execs a bare `perl`.
+        export PATH="/usr/pkg/bin:/usr/pkg/sbin:$PATH"
+        perl -V
+        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
+        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
+        #~ install aborts the whole run even though it succeeded. cpanm lands in
+        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
+        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
+        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
+        perl /tmp/cpanmin.pl App::cpanminus
+        rm -f /tmp/cpanmin.pl
+        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
+        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
+        #~ the real gcc when there is no /usr/bin/cc.
+        gcc_path=$(command -v gcc 2>/dev/null || true)
+        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
+        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
+        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
+        command -v cpanm
+        export XMAKE_ROOT=y
+        cpanm --notest IO::Socket::SSL
+        cpanm -v --with-recommends .
+  openbsd:
+    name: OpenBSD
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
+    with:
+      matrix: "[]\n"
+      os_version: 7.8
+      task: |
+        perl -V
+        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
+        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
+        #~ install aborts the whole run even though it succeeded. cpanm lands in
+        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
+        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
+        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
+        perl /tmp/cpanmin.pl App::cpanminus
+        rm -f /tmp/cpanmin.pl
+        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
+        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
+        #~ the real gcc when there is no /usr/bin/cc.
+        gcc_path=$(command -v gcc 2>/dev/null || true)
+        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
+        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
+        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
+        command -v cpanm
+        export XMAKE_ROOT=y
+        cpanm --notest IO::Socket::SSL
+        cpanm -v --with-recommends .
   results:
-    name: Results
+    if: always()
+    name: Summary
     needs:
-      - macos
-      - win32
       - linux
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Download test results
-        uses: actions/download-artifact@v8.0.1
-        with:
-          path: artifacts
-      - name: Report test results
-        run: |
-          # Function to process a directory
-          process_dir() {
-            local dir="$1"
-            # Loop through each element in the directory
-            for file in "$dir"/*; do
-              # Check if it's a directory
-              if [ -d "$file" ]; then
-                # Recursively call process_dir for subdirectories (except .)
-                if [ "$file" != "." ]; then
-                  process_dir "$file"
-                fi
-              # If it's a regular file, print its content
-              elif [ -f "$file" ]; then
-                echo "================> $file <================"
-                cat "$file"
-                echo ""  # Add an empty line between files
-              fi
-            done
-          }
-          # Get the directory path from the first argument (or current directory)
-          dir=${1:-.}
-          # Process the specified directory
-          process_dir "artifacts"
-  setup:
-    name: Generate Testing Matrix
-    outputs:
-      matrix: '${{ steps.matrix.outputs.matrix }}'
-    runs-on: ubuntu-22.04
-    steps:
-      - env:
-          DATA: |
-            {
-              "perl":  ["5.42.0"],
-              "flags": ["", "-Dusethreads"]
-            }
-        id: matrix
-        run: "jq -rn 'env.DATA | fromjson | @json \"matrix=\\(.)\"' > $GITHUB_OUTPUT\n"
-  win32:
-    name: 'Windows/v${{matrix.perl}}'
-    needs:
-      - setup
-    strategy:
-      fail-fast: false
-      matrix:
-        exclude:
-          - flags: -Duselongdouble
-          - flags: -Dusequadmath
-        flags:
-          - -Dusethreads
-          - ''
-        os:
-          - windows-2022
-        perl: '${{ fromJSON(needs.setup.outputs.matrix).perl }}'
-      max-parallel: 25
-    uses: ./.github/workflows/win32.yml
+      - macos
+      - windows
+      - windows-nocc
+      - syslibs
+    uses: sanko/workflow-testing/.github/workflows/results-summary.yml@main
+  solaris:
+    name: Solaris
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
     with:
-      flags: '${{ matrix.flags }}'
-      os: '${{ matrix.os }}'
-      perl: '${{ matrix.perl }}'
-name: CI Matrix
+      matrix: |
+        [
+          {"platform_name":"solaris","os":"solaris","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg install -v --accept perl-538 gcc developer/build/make developer/build/cmake bash git && (pkg install -v --accept developer/build/ninja || echo 'note: no ninja package on this Solaris release')"}
+        ]
+      os_version: 11.4
+      task: |
+        perl -V
+        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
+        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
+        #~ install aborts the whole run even though it succeeded. cpanm lands in
+        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
+        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
+        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
+        perl /tmp/cpanmin.pl App::cpanminus
+        rm -f /tmp/cpanmin.pl
+        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
+        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
+        #~ the real gcc when there is no /usr/bin/cc.
+        gcc_path=$(command -v gcc 2>/dev/null || true)
+        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
+        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
+        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
+        command -v cpanm
+        export XMAKE_ROOT=y
+        cpanm --notest IO::Socket::SSL
+        cpanm -v --with-recommends .
+  syslibs:
+    name: Pre-installed libraries
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
+    with:
+      matrix: |
+        [
+          {"name":"Linux   - Intel","platform_name":"ubuntu","os":"ubuntu-latest","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5"},
+          {"name":"macOS   - Apple Silicon","platform_name":"macos","os":"macos-15","arch":"aarch64","toolchain":"gcc","perl_version":"5.42.3"},
+          {"name":"Windows - Intel","platform_name":"windows","os":"windows-latest","arch":"x86_64","toolchain":"gcc","prepare":"choco install strawberryperl make -y -q; vcpkg install sdl3 sdl3-image sdl3-ttf sdl3-mixer"}
+        ]
+      task: |
+        set -e
+        perl -V
+        #~ Install the SDL3 family and everything it links against through the
+        #~ platform package manager *before* the local build runs. The recipes
+        #~ declare add_extsources("apt::libsdl3-dev", "brew::sdl3",
+        #~ "pacman::SDL3", "vcpkg::sdl3"), so a packaged SDL3 flips xrepo from a from-source
+        #~ build to the distro library, and this leg is the only coverage of
+        #~ that path: it catches a distro SDL3 drifting away from the recipe we
+        #~ pin, and it leaves the codec/font/audio headers on disk so the
+        #~ from-source fallback has less to build.
+        #~ Everything after the "required" block is best-effort: the local build
+        #~ still has to pass whether or not the distro ships the family, so a
+        #~ missing package is reported and the run continues.
+        case "$RUNNER_OS" in
+        Linux)
+          sudo apt-get update -qq
+          #~ Required, not best-effort: recipes/packages/l/libsdl3/xmake.lua
+          #~ raises before configuring cmake unless all of these headers are
+          #~ present, on the grounds that bootstrapping the X11 stack from
+          #~ source has wedged CI for hours.
+          sudo apt-get install -y --no-install-recommends cmake ninja-build pkgconf curl \
+            libx11-dev libxcb1-dev libxext-dev libxfixes-dev libxcursor-dev libxrandr-dev \
+            libxi-dev libxrender-dev libxss-dev libxkbcommon-dev libwayland-dev
+          #~ The SDL3 family itself: in the archive from Ubuntu 25.10 on, absent
+          #~ in 24.04, so ubuntu-latest's release is what this leg gets to cover.
+          for pkg in libsdl3-dev libsdl3-image-dev libsdl3-ttf-dev libsdl3-mixer-dev; do
+            sudo apt-get install -y --no-install-recommends "$pkg" || echo "note: $pkg is not in this Ubuntu release"
+          done
+          #~ What the family links against. Also what the from-source fallback
+          #~ compiles against when a family member is missing above.
+          sudo apt-get install -y --no-install-recommends \
+            libpng-dev libjpeg-dev libtiff-dev libwebp-dev libfreetype6-dev \
+            libogg-dev libvorbis-dev libflac-dev libopus-dev libopusfile-dev \
+            libsndfile1-dev libasound2-dev libpulse-dev libpipewire-0.3-dev \
+            libudev-dev libdbus-1-dev libgl1-mesa-dev libegl1-mesa-dev \
+            libibus-1.0-dev zlib1g-dev libbz2-dev \
+            || echo 'note: some codec/audio development packages are missing'
+          if pkg-config --exists sdl3; then
+            echo "system libsdl3 v$(pkg-config --modversion sdl3)"
+          else
+            echo 'note: no system libsdl3.pc, the build falls back to its own'
+          fi
+          pkg-config --list-all 2>/dev/null | grep -i -e '^SDL3' -e 'SDL3_' || true
+          ;;
+        macOS)
+          brew update --quiet
+          #~ Bottled for both macOS architectures, so these should always land.
+          brew install sdl3 sdl3_image sdl3_ttf sdl3_mixer cmake pkg-config
+          #~ Explicit even though the formulae above already pull them in: the
+          #~ from-source fallback needs them too, and brew is free to skip a
+          #~ link-time-only dependency of a static formula.
+          brew install freetype libpng libtiff webp jpeg-turbo libogg libvorbis flac opus libsndfile \
+            || echo 'note: some codec/font packages are missing'
+          brew list --versions sdl3 sdl3_image sdl3_ttf sdl3_mixer
+          ;;
+        Windows)
+          #~ Chocolatey has no SDL3 package at all, so vcpkg (preinstalled on
+          #~ the Windows runner images) is the package manager here. Its tree is
+          #~ x64 to match Strawberry Perl's gcc.
+          vcpkg install sdl3 sdl3-image sdl3-ttf sdl3-mixer
+          choco install make -y -q
+          export PATH="/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
+          perl -e 'print qq(perl=\$^X :: \$^O\n)'
+          ;;
+        esac
+        #~ Bootstrap cpanm.
+        curl -L https://cpanmin.us | perl - App::cpanminus
+        #~ Alien::Xrepo v1.0.4 needs no manual step: it is a declared
+        #~ prerequisite (configure/build_requires Alien::Xrepo::MB, requires
+        #~ Alien::Xrepo::Runtime), so `cpanm -v --with-recommends .` installs it before this dist
+        #~ configures. v1.0.4 fixed the readonly-template handling
+        #~ (_ensure_templates_available) and resolves a package's runtime DLL
+        #~ from its links; the old `dev` pin predates that release.
+        #~ ExtUtils::Install marks every installed file 0444, and on Windows that
+        #~ flag survives xmake's template copy, so xrepo's `xmake create` dies
+        #~ with "cannot open file ... Permission denied" while rewriting the
+        #~ copied xmake.lua. perl/lib stays read-only; instead mirror the built-in
+        #~ templates into the user's writable xmake global dir, which xmake
+        #~ resolves ahead of its own (read-only) copies. Alien::Xrepo v1.0.4
+        #~ does this itself; the mirror here also covers builds that call xmake
+        #~ without it.
+        if [ "$RUNNER_OS" = Windows ]; then
+          #~ xmake's global dir is not simply ~/.xmake on Windows (LOCALAPPDATA),
+          #~ so ask xmake where it is.
+          XGL=$(/c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/xmake.exe lua -c "import('core.base.global'); print('XREPO_GLOBALDIR=' .. global.directory())" 2>/dev/null | sed -n 's/^XREPO_GLOBALDIR=//p' | tr -d '\r') || true
+          if [ -n "$XGL" ]; then
+            mkdir -p "$XGL/templates"
+            cp -r /c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/templates/* "$XGL/templates/" 2>/dev/null || true
+            chmod -R u+w "$XGL/templates" || true
+          fi
+        fi
+        #~ Build and install the dist locally as usual. On Windows the family
+        #~ compiles from source here -- vcpkg's SDL3 is older than the recipe's
+        #~ 3.4.18 gate and the extension recipes follow that verdict and the
+        #~ snapshot written under blib is what the audit below reads.
+        cpanm -v --with-recommends .
+        #~ Audit: the whole family must resolve, whether that came from the
+        #~ package manager above or from the local build. This is also the only
+        #~ place the leg prints which version of each package actually won,
+        #~ which is what says whether the extsource path was taken at all.
+        perl -MAlien::SDL3 -e '
+          my $sdl3 = Alien::SDL3->new;
+          my $bad  = 0;
+          for my $name ($sdl3->package_names) {
+              my $info = $sdl3->alt($name)->package_info or do { print "MISSING $name\n"; ++$bad; next };
+              printf "%-16s v%-9s %-8s %s\n", $name, $info->version // q(?), $info->kind // q(?), $info->installdir // q(?);
+          }
+          exit($bad ? 1 : 0);
+        '
+  windows:
+    name: Windows
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
+    with:
+      matrix: |
+        [
+          {"platform_name":"windows","os":"windows-latest","arch":"x86_64","toolchain":"gcc","prepare":"choco install strawberryperl"},
+          {"platform_name":"windows","os":"windows-latest","arch":"x86_64","toolchain":"clang","prepare":"choco install llvm strawberryperl"},
+          {"platform_name":"windows-arm","os":"windows-11-arm","arch":"aarch64","toolchain":"gcc","variant":"x64","prepare":"choco install make -y; curl -sL -o /c/strawberry.zip https://github.com/StrawberryPerl/Perl-Dist-Strawberry/releases/download/SP_54051_64bit/strawberry-perl-5.40.5.1-64bit-portable.zip && rm -rf /c/Strawberry; powershell -NoProfile -Command Expand-Archive -Path C:/strawberry.zip -DestinationPath C:/Strawberry -Force -ErrorAction Stop; rm -f /c/strawberry.zip && ln -sf /c/Strawberry/c/bin/gcc.exe /c/Strawberry/c/bin/cc.exe"}
+        ]
+      task: |
+        export PATH="/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
+        perl -e 'print qq(perl=\$^X :: \$^O\n)'
+        curl -L https://cpanmin.us | perl - App::cpanminus
+        command -v cpanm
+        XGL=$(/c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/xmake.exe lua -c "import('core.base.global'); print('XREPO_GLOBALDIR=' .. global.directory())" 2>/dev/null | sed -n 's/^XREPO_GLOBALDIR=//p' | tr -d '\r') || true
+        if [ -n "$XGL" ]; then
+          mkdir -p "$XGL/templates"
+          cp -r /c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/templates/* "$XGL/templates/" 2>/dev/null || true
+          chmod -R u+w "$XGL/templates" || true
+        fi
+        cpanm -v --with-recommends .
+  windows-nocc:
+    name: 'Windows (prebuilt, Perl only)'
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
+    with:
+      matrix: |
+        [
+          {"platform_name":"windows","os":"windows-latest","arch":"x86_64","toolchain":"gcc","prepare":"choco install strawberryperl"}
+        ]
+      task: |
+        export PATH="/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
+        perl -e 'print qq(perl=\$^X :: \$^O\n)'
+        curl -L https://cpanmin.us | perl - App::cpanminus
+        command -v cpanm
+        #~ ExtUtils::Install ships every installed file 0444 and on Windows that
+        #~ flag survives xmake's template copy, so mirror the built-in templates
+        #~ into xmake's writable global dir before the build (same reason as the
+        #~ `windows` job: Alien::Xrepo v1.0.4+ does this itself, and the mirror
+        #~ also covers any xmake call made without it).
+        XGL=$(/c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/xmake.exe lua -c "import('core.base.global'); print('XREPO_GLOBALDIR=' .. global.directory())" 2>/dev/null | sed -n 's/^XREPO_GLOBALDIR=//p' | tr -d '\r') || true
+        if [ -n "$XGL" ]; then
+          mkdir -p "$XGL/templates"
+          cp -r /c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/templates/* "$XGL/templates/" 2>/dev/null || true
+          chmod -R u+w "$XGL/templates" || true
+        fi
+        cpanm -v --with-recommends .
+        #~ Every package must resolve -- through the prebuilt archives, never a
+        #~ from-source build. Print what won so a silent regression is visible in
+        #~ the log, and fail if any family member is missing.
+        perl -MAlien::SDL3 -e '
+          my $sdl3 = Alien::SDL3->new;
+          my $bad  = 0;
+          for my $name ($sdl3->package_names) {
+              my $info = $sdl3->alt($name)->package_info or do { print "MISSING $name\n"; ++$bad; next };
+              printf "%-16s v%-9s %-8s %s\n", $name, $info->version // q(?), $info->kind // q(?), $info->installdir // q(?);
+          }
+          exit($bad ? 1 : 0);
+        '
+name: CI
 on:
   pull_request: ~
-  push: ~
-  schedule:
-    - cron: 42 5 * * 0
+  push:
+    branches:
+      - main
+      - dev
+      - dev-repair
   workflow_dispatch: ~
 permissions:
   actions: read

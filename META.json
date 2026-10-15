@@ -2,7 +2,7 @@
    "X_No_Archive" : "Yes",
    "abstract" : "Perl Wrapper for the Simple DirectMedia Layer 3.0",
    "author" : [
-      "Sanko Robinson <sanko@cpan.org>"
+      "Sanko Robinson"
    ],
    "description" : "FFI Wrapper of SDL3",
    "dynamic_config" : 0,
@@ -45,8 +45,8 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Affix" : "v1.1.0",
-            "Alien::Xrepo" : "0"
+            "Affix" : "v1.2.7",
+            "Alien::SDL3" : "0"
          }
       },
       "configure" : {
@@ -62,7 +62,7 @@
             "File::Spec::Functions" : "0",
             "Getopt::Long" : "2.36",
             "JSON::PP" : "2",
-            "Module::Build" : "0",
+            "Module::Build::Tiny" : "0",
             "Path::Tiny" : "0.144"
          }
       },
@@ -92,7 +92,8 @@
       },
       "runtime" : {
          "requires" : {
-            "Affix" : "v1.1.0",
+            "Affix" : "v1.2.7",
+            "Alien::SDL3" : "0",
             "Carp" : "0",
             "Data::Dump" : "0",
             "perl" : "v5.40.0"
