@@ -8,7 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - `eg/basics/rope.pl` - a port of [rope-jai](https://github.com/tsoding/rope-jai/tree/master)
+
+### Fixed
+
+- `SDL_RenderGeometry`'s Affix prototype now marks its pointer arguments `Const`, matching the `const SDL_*` parameters in SDL3's headers.
+
+### Changed
+
+- The build now uses `Module::Build::Tiny`; the custom `SDL3::Builder` Module::Build subclass and its build-time xrepo install hook are gone, so `Build.PL` is three lines.
+- `lib/SDL3.pm` locates the SDL3 family through `Alien::SDL3`'s per-package `alt(...)->package_info` API (core, mixer, image, ttf) instead of `dynamic_libs`, resolving each package's library path and bindirs explicitly. The glue is still being cleaned up.
+- Dependencies: requires `Affix` v1.2.7 and no longer pins a minimum `Alien::SDL3` (was v2.24.0), so installs can pick up current releases.
+- CI: the old cross/unix/win32 workflows were folded into one VM matrix (`ci.yml`); the Solaris and NetBSD legs install the X11 headers and build tools they were missing.
 
 ## [v0.0.5] - 2026-08-07
 
