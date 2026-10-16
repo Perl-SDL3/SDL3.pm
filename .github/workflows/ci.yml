@@ -139,7 +139,7 @@ jobs:
       #~ failure rather than a broken prepare.
       matrix: |
         [
-          {"platform_name":"netbsd","os":"netbsd","arch":"x86_64","toolchain":"gcc","prepare":"export PKG_PATH=https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/10.0/All; /usr/sbin/pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf m4 && (/usr/sbin/pkg_add -U xorgproto libXcursor libXrender libXScrnSaver libxkbcommon python313 py313-pip py313-setuptools py313-wheel || echo 'note: some X11/python development packages are unavailable in pkgsrc')"}
+          {"platform_name":"netbsd","os":"netbsd","arch":"x86_64","toolchain":"gcc","prepare":"export PKG_PATH=https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/10.0/All; /usr/sbin/pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf m4 && (/usr/sbin/pkg_add -U xorgproto libXcursor libXrender libXScrnSaver libxkbcommon x11-links python313 py313-pip py313-setuptools py313-wheel || echo 'note: some X11/python development packages are unavailable in pkgsrc')"}
         ]
       os_version: 10.1
       task: |
