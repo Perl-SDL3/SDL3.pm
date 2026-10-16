@@ -127,9 +127,19 @@ jobs:
     secrets: inherit
     uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
     with:
+      #~ X11 is in the NetBSD base system, and xrepo has no system lookup for the
+      #~ libx11/libxcb family on the BSDs, so the from-source libsdl3 build
+      #~ bootstraps the whole X11 stack from source. That bootstrap needs m4 (for
+      #~ autoconf, which xorgproto builds with) and a python3 carrying pip,
+      #~ setuptools and wheel (libxcb's xcbgen), neither of which the base image
+      #~ has: without m4 it stops at "configure: error: no acceptable m4 could be
+      #~ found in $PATH". python313's installer also links /usr/pkg/bin/python3,
+      #~ which is the name xmake's fetch hook probes for. Best-effort on the X11
+      #~ group: a leg missing one of these still has to be able to report its real
+      #~ failure rather than a broken prepare.
       matrix: |
         [
-          {"platform_name":"netbsd","os":"netbsd","arch":"x86_64","toolchain":"gcc","prepare":"export PKG_PATH=https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/10.0/All; /usr/sbin/pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf"}
+          {"platform_name":"netbsd","os":"netbsd","arch":"x86_64","toolchain":"gcc","prepare":"export PKG_PATH=https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/10.0/All; /usr/sbin/pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf m4 && (/usr/sbin/pkg_add -U xorgproto libXcursor libXrender libXScrnSaver libxkbcommon python313 py313-pip py313-setuptools py313-wheel || echo 'note: some X11/python development packages are unavailable in pkgsrc')"}
         ]
       os_version: 10.1
       task: |
@@ -201,9 +211,17 @@ jobs:
     secrets: inherit
     uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
     with:
+      #~ The recipe adds no X11 deps on Solaris (libsdl3's x11 config only covers
+      #~ linux/bsd/cross), so SDL3's own cmake does the X11 probe and hard-errors
+      #~ on the first missing piece: "Couldn't find dependency package for
+      #~ XCURSOR. Please install the needed packages or configure with
+      #~ -DSDL_X11_XCURSOR=OFF". The whole X11 extension set cmake checks
+      #~ (Xext/Xcursor/Xi/Xfixes/Xrandr/Xrender/Xss/Xtst plus the xorgproto
+      #~ headers) is what it needs, installed best-effort so a name that is not in
+      #~ this Solaris release does not break the prepare.
       matrix: |
         [
-          {"platform_name":"solaris","os":"solaris","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg install -v --accept perl-538 gcc developer/build/make developer/build/cmake bash git && (pkg install -v --accept developer/build/ninja || echo 'note: no ninja package on this Solaris release')"}
+          {"platform_name":"solaris","os":"solaris","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg install -v --accept perl-538 gcc developer/build/make developer/build/cmake bash git && (pkg install -v --accept developer/build/ninja || echo 'note: no ninja package on this Solaris release') && (pkg install -v --accept x11/header/x11-protocols x11/library/libx11 x11/library/libxcb x11/library/libxext x11/library/libxfixes x11/library/libxcursor x11/library/libxrandr x11/library/libxi x11/library/libxrender x11/library/libxscrnsaver x11/library/libxtst x11/library/libxkbcommon || echo 'note: some X11 development packages are unavailable on this Solaris release')"}
         ]
       os_version: 11.4
       task: |
