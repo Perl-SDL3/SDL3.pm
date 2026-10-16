@@ -219,9 +219,13 @@ jobs:
       #~ (Xext/Xcursor/Xi/Xfixes/Xrandr/Xrender/Xss/Xtst plus the xorgproto
       #~ headers) is what it needs, installed best-effort so a name that is not in
       #~ this Solaris release does not break the prepare.
+      #~ archiver/gnu-tar is REQUIRED: it is the /usr/bin/gtar that the task
+      #~ shims in front of the System V tar, because xmake's `tar -xf <a> -C <d>`
+      #~ extraction needs a -C-on-extract tar (see the task). IPS installs GNU
+      #~ binaries under a g-prefixed name when a Sun tool of the same name exists.
       matrix: |
         [
-          {"platform_name":"solaris","os":"solaris","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg install -v --accept perl-538 gcc developer/build/make developer/build/cmake bash git && (pkg install -v --accept developer/build/ninja || echo 'note: no ninja package on this Solaris release') && (pkg install -v --accept x11/header/x11-protocols x11/library/libx11 x11/library/libxcb x11/library/libxext x11/library/libxfixes x11/library/libxcursor x11/library/libxrandr x11/library/libxi x11/library/libxrender x11/library/libxscrnsaver x11/library/libxtst x11/library/libxkbcommon || echo 'note: some X11 development packages are unavailable on this Solaris release')"}
+          {"platform_name":"solaris","os":"solaris","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg install -v --accept perl-538 gcc developer/build/make developer/build/cmake archiver/gnu-tar bash git && (pkg install -v --accept developer/build/ninja || echo 'note: no ninja package on this Solaris release') && (pkg install -v --accept x11/header/x11-protocols x11/library/libx11 x11/library/libxcb x11/library/libxext x11/library/libxfixes x11/library/libxcursor x11/library/libxrandr x11/library/libxi x11/library/libxrender x11/library/libxscrnsaver x11/library/libxtst x11/library/libxkbcommon || echo 'note: some X11 development packages are unavailable on this Solaris release')"}
         ]
       os_version: 11.4
       task: |
@@ -242,6 +246,30 @@ jobs:
         echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
         echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
         command -v cpanm
+        #~ xmake unpacks every from-source tarball with
+        #~ `tar -xf <archive> -C <dir>` (utils/archive/extract.lua
+        #~ _extract_using_tar). Solaris' own /usr/bin/tar is the System V tar,
+        #~ whose -C is documented as a create/replace operand ("-C directory
+        #~ file ... performs the c (create) or r (replace) operation"), so the
+        #~ extraction does not land in xmake's staging directory. xmake then
+        #~ finds no single root directory to strip, hands cmake
+        #~ .../freetype/2.14.1/source as the source dir, and freetype's install
+        #~ dies with
+        #~   CMake Error: The source directory ".../freetype/2.14.1/source"
+        #~   does not appear to contain CMakeLists.txt.
+        #~ freetype is the only from-source *tarball* on Solaris (X11 comes from
+        #~ packages, SDL3/SDL3_ttf from .zip), which is why nothing else trips
+        #~ it. GNU tar (archiver/gnu-tar -> /usr/bin/gtar, installed by prepare)
+        #~ accepts -C in extract mode and auto-detects gzip on read.
+        #~ find_tool("tar") resolves through `which tar`, so PATH order decides:
+        #~ put a GNU tar shim ahead of the System V one.
+        gtar=$(command -v gtar 2>/dev/null || true)
+        [ -n "$gtar" ] || gtar=/usr/bin/gtar
+        mkdir -p /tmp/gnutar
+        ln -sf "$gtar" /tmp/gnutar/tar
+        export PATH="/tmp/gnutar:$PATH"
+        echo "gtar=$gtar tar=$(command -v tar)"
+        tar --version 2>&1 | head -n 1
         export XMAKE_ROOT=y
         cpanm --notest IO::Socket::SSL
         cpanm -v --with-recommends .
