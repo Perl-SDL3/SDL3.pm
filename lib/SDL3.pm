@@ -62,16 +62,16 @@ Each feature listed below is a tag you may use.
     my $alien = Alien::SDL3->new;
     my $sdl3  = $alien->alt('libsdl3')->package_info;
     croak 'Could not find library' unless $sdl3;
-    my $mixer = $alien->alt('libsdl3_mixer')->package_info;
-    my $image = $alien->alt('libsdl3_image')->package_info;
-    my $ttf   = $alien->alt('libsdl3_ttf')->package_info;
-    warn 'sdl3:    ' . $sdl3;
-    warn '  mixer: ' . $mixer;
-    warn '  image: ' . $image;
-    warn '    ttf: ' . $ttf;
-    use Data::Dumper;
+    #~ my $mixer = $alien->alt('libsdl3_mixer')->package_info;
+    #~ my $image = $alien->alt('libsdl3_image')->package_info;
+    #~ my $ttf   = $alien->alt('libsdl3_ttf')->package_info;
+    #~ warn 'sdl3:    ' . $sdl3;
+    #~ warn '  mixer: ' . $mixer;
+    #~ warn '  image: ' . $image;
+    #~ warn '    ttf: ' . $ttf;
+    #~ use Data::Dumper;
     my ( $lib, @etc ) = @{ $sdl3->libfiles };
-    print Dumper $sdl3->runtime_deps;
+    #~ print Dumper $sdl3->runtime_deps;
     $ENV{PATH} = join( ';', ( map { @{ $_->bindirs // [] } } $sdl3 ), $ENV{PATH} );
 
     #~ Affix::load_library($_) or die 'Could not find ' . $_ for $lib, @etc;
