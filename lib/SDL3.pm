@@ -88,7 +88,7 @@ Each feature listed below is a tag you may use.
         require List::Util;
         @EXPORT_OK = sort map {@$_} values %EXPORT_TAGS;
         $EXPORT_TAGS{all} = [@EXPORT_OK];
-        SDL3->export_to_level( 1, $pkg, @wants );
+        __PACKAGE__->export_to_level( 1, $pkg, @wants );
     }
     #
     sub _affix_and_export( $name, $args, $ret ) {
