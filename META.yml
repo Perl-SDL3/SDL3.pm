@@ -52,7 +52,10 @@ optional_features:
 provides:
   SDL3:
     file: lib/SDL3.pm
-    version: v0.0.5
+    version: v0.0.6
+  SDL3::Mixer:
+    file: lib/SDL3/Mixer.pm
+    version: v0.0.6
 requires:
   Affix: v1.2.7
   Alien::SDL3: '0'
@@ -64,7 +67,7 @@ resources:
   homepage: https://github.com/Perl-SDL3/SDL3.pm
   license: http://www.perlfoundation.org/artistic_license_2_0
   repository: git://github.com/Perl-SDL3/SDL3.pm.git
-version: v0.0.5
+version: v0.0.6
 x_help_wanted:
   - Tester
   - Documenter

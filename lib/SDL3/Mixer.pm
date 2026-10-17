@@ -1,4 +1,4 @@
-package SDL3::Mixer v0.0.5 {
+package SDL3::Mixer v0.0.6 {
     use v5.40;
     use base 'Exporter';
     use Affix qw[:all];
@@ -61,8 +61,7 @@ Each feature listed below is a tag you may use.
     sub _affix_and_export( $name, $args, $ret ) {
         my ( $n, $r ) = ref $name ? @$name : ( $name, $name );
         confess 'Failed to affix ' . $name . ': ' . $n unless affix $lib, $name, $args, $ret;
-         push @{ $EXPORT_TAGS{ [ caller(1) ]->[3] =~ s/^.+?_//r } }, $n;
-
+        push @{ $EXPORT_TAGS{ [ caller(1) ]->[3] =~ s/^.+?_//r } }, $n;
     }
 
     sub _const_and_export( $name, $value ) {
@@ -114,39 +113,27 @@ you'll have access to with this import tag.
 
     sub _all() {
         state $done++ && return;
+        _affix_and_export MIX_Init                => [], Bool;
+        _affix_and_export MIX_Quit                => [], Void;
+        _affix_and_export MIX_GetNumAudioDecoders => [], Int;
+        #
+        #~ extern SDL_DECLSPEC MIX_Mixer * SDLCALL MIX_CreateMixer(const SDL_AudioSpec *spec);
+        _affix_and_export MIX_CreateMixer => [ Pointer [Void] ], Pointer [Void];
 
-                _affix_and_export MIX_Init   => [   ], Bool;
-                _affix_and_export MIX_Quit   => [   ], Void;
+        #~ extern SDL_DECLSPEC MIX_Mixer * SDLCALL MIX_CreateMixerDevice(SDL_AudioDeviceID devid, const SDL_AudioSpec *spec);
+        _affix_and_export MIX_CreateMixerDevice => [ Int, Pointer [Void] ], Pointer [Void];
 
-                _affix_and_export MIX_GetNumAudioDecoders   => [   ], Int;
+        #~ extern SDL_DECLSPEC MIX_Audio * SDLCALL MIX_CreateSineWaveAudio(MIX_Mixer *mixer, int hz, float amplitude, Sint64 ms);
+        _affix_and_export MIX_CreateSineWaveAudio => [ Pointer [Void], Int, Float, SInt64 ], Pointer [Void];
 
+        #~ extern SDL_DECLSPEC MIX_Track * SDLCALL MIX_CreateTrack(MIX_Mixer *mixer);
+        _affix_and_export MIX_CreateTrack => [ Pointer [Void] ], Pointer [Void];
 
-#
-#~ extern SDL_DECLSPEC MIX_Mixer * SDLCALL MIX_CreateMixer(const SDL_AudioSpec *spec);
-_affix_and_export MIX_CreateMixer   => [  Pointer[Void] ], Pointer[Void];
+        #~ extern SDL_DECLSPEC bool SDLCALL MIX_SetTrackAudio(MIX_Track *track, MIX_Audio *audio);
+        _affix_and_export MIX_SetTrackAudio => [ Pointer [Void], Pointer [Void] ], Bool;
 
-#~ extern SDL_DECLSPEC MIX_Mixer * SDLCALL MIX_CreateMixerDevice(SDL_AudioDeviceID devid, const SDL_AudioSpec *spec);
-_affix_and_export MIX_CreateMixerDevice   => [ Int, Pointer[Void] ], Pointer[Void];
-
-#~ extern SDL_DECLSPEC MIX_Audio * SDLCALL MIX_CreateSineWaveAudio(MIX_Mixer *mixer, int hz, float amplitude, Sint64 ms);
-_affix_and_export MIX_CreateSineWaveAudio   => [ Pointer[Void], Int, Float, SInt64 ], Pointer[Void];
-
-
-#~ extern SDL_DECLSPEC MIX_Track * SDLCALL MIX_CreateTrack(MIX_Mixer *mixer);
-_affix_and_export MIX_CreateTrack   => [ Pointer[Void] ], Pointer[Void];
-
-
-
-
-
-
-
-
-#~ extern SDL_DECLSPEC bool SDLCALL MIX_SetTrackAudio(MIX_Track *track, MIX_Audio *audio);
-_affix_and_export MIX_SetTrackAudio   => [ Pointer[Void], Pointer[Void] ], Bool;
-
-#~ extern SDL_DECLSPEC bool SDLCALL MIX_PlayTrack(MIX_Track *track, SDL_PropertiesID options);
-_affix_and_export MIX_PlayTrack   => [ Pointer[Void], SDL3::SDL_PropertiesID() ], Bool;
+        #~ extern SDL_DECLSPEC bool SDLCALL MIX_PlayTrack(MIX_Track *track, SDL_PropertiesID options);
+        _affix_and_export MIX_PlayTrack => [ Pointer [Void], SDL3::SDL_PropertiesID() ], Bool;
         return;
         _stdinc();
         _assert();

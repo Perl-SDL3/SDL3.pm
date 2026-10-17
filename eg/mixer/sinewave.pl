@@ -11,6 +11,7 @@ $|++;
 # SDL_mixer.
 #
 # This code is public domain. Feel free to use it for any purpose!
+#
 # We will use this renderer to draw into this window every frame.
 my ( $window, $renderer );
 
@@ -27,7 +28,7 @@ sub SDL_AppInit( $appstate, $argc, @argv ) {
         SDL_Log( q[Couldn't initialize SDL: %s], SDL_GetError() );
         return SDL_APP_FAILURE;
     }
-    if ( !SDL_CreateWindowAndRenderer( "examples/basic/load-and-play", 640, 480, SDL_WINDOW_RESIZABLE, $window, $renderer ) ) {
+    if ( !SDL_CreateWindowAndRenderer( 'examples/basic/load-and-play', 640, 480, SDL_WINDOW_RESIZABLE, $window, $renderer ) ) {
         SDL_Log q[Couldn't create window/renderer: %s], SDL_GetError();
         return SDL_APP_FAILURE;
     }

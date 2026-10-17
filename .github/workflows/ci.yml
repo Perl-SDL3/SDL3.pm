@@ -1,12 +1,15 @@
 ---
 jobs:
-
-  freebsd:
-    name: FreeBSD
-    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
+  dragonflybsd:
+    name: DragonFly BSD
     secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
     with:
-      os_version: '15.0'
+      matrix: |
+        [
+          {"platform_name":"dragonflybsd","os":"dragonflybsd","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg update && pkg upgrade -y && pkg install -y perl5 gcc curl gmake libunistring git cmake ninja unzip pkgconf && (pkg install -y libX11 libxcb libXext libXfixes libXcursor libXrandr libXi libXrender libXScrnSaver libxkbcommon wayland xorgproto || echo 'note: some X11 development packages are unavailable in dports')"}
+        ]
+      os_version: 6.4.0
       task: |
         perl -V
         #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
@@ -28,22 +31,17 @@ jobs:
         export XMAKE_ROOT=y
         cpanm --notest IO::Socket::SSL
         cpanm -v --with-recommends .
-      #~ No X11 in base: install the dev libs so xmake uses the system pkg tools
-      #~ instead of bootstrapping the whole X11 stack from source. cmake and ninja come
-      #~ from ports here because xmake-repo cannot supply cmake on the BSDs (see the
-      #~ recipe), and unzip because xmake unpacks some of its own packages from zips.
-      matrix: >
+  freebsd:
+    name: FreeBSD
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
+    with:
+      matrix: |
         [
           {"platform_name":"freebsd","os":"freebsd","arch":"x86_64","toolchain":"gcc","prepare":"pkg install -y perl5 lang/gcc libX11 libxcb libXext libXfixes libXcursor libXrandr libXi libXrender libXScrnSaver libxkbcommon wayland xorgproto pkgconf curl gmake git cmake ninja unzip"},
           {"platform_name":"freebsd","os":"freebsd","arch":"x86_64","toolchain":"clang","prepare":"pkg install -y perl5 llvm libX11 libxcb libXext libXfixes libXcursor libXrandr libXi libXrender libXScrnSaver libxkbcommon wayland xorgproto pkgconf curl gmake git cmake ninja unzip"}
         ]
-
-  openbsd:
-    name: OpenBSD
-    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
-    secrets: inherit
-    with:
-      os_version: '7.8'
+      os_version: 15.0
       task: |
         perl -V
         #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
@@ -65,145 +63,6 @@ jobs:
         export XMAKE_ROOT=y
         cpanm --notest IO::Socket::SSL
         cpanm -v --with-recommends .
-      #~ OpenBSD is disabled for now: its in-VM builds are so slow they were
-      #~ blocking the whole dev loop. Re-enable once the fast platforms are
-      #~ fully green (prep: pkg_add gcc-11.2.0p19 g++-11.2.0p19 curl gmake git).
-      matrix: >
-        []
-
-  netbsd:
-    name: NetBSD
-    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
-    secrets: inherit
-    with:
-      os_version: '10.1'
-      task: |
-        #~ Perl comes from pkgsrc, not from the base system, so put /usr/pkg/bin
-        #~ in front before anything looks for perl. The image's login PATH
-        #~ already carries that directory; this only makes the dependency
-        #~ explicit for anything that re-execs a bare `perl`.
-        export PATH="/usr/pkg/bin:/usr/pkg/sbin:$PATH"
-        #~ The VM image is installed without X11, so the prepare unpacks the
-        #~ release's xbase/xcomp sets into /usr/X11R7. That prefix is in neither
-        #~ pkgconf's nor cmake's default search path, so point both at it (the
-        #~ .pc files carry the -I/-L for the compiler); without this the
-        #~ from-source libsdl3 build cannot see the system X11 and bootstraps
-        #~ the whole stack instead.
-        export PKG_CONFIG_PATH="/usr/X11R7/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
-        export CMAKE_PREFIX_PATH="/usr/X11R7${CMAKE_PREFIX_PATH:+:$CMAKE_PREFIX_PATH}"
-        #~ xmake matches a dependency to a pkg-config file named after the
-        #~ package with any leading "lib" stripped, so libx11 matches x11.pc and
-        #~ libxss matches xss.pc. X11R7 carries the XScrnSaver library but names
-        #~ its file xscrnsaver.pc, so libxss would not match and xmake would
-        #~ rebuild it from source, pulling in its own autoconf/automake/libtool
-        #~ (which cannot find pkgsrc's pkg.m4 and dies with "PKG_PROG_PKG_CONFIG:
-        #~ not found"). The prepare aliases xss.pc to xscrnsaver.pc so libXss
-        #~ resolves from the system like the rest of the family. ACLOCAL_PATH is
-        #~ kept as a fallback for a from-source autotools package: pkgsrc keeps
-        #~ pkg.m4 in /usr/pkg/share/aclocal, which aclocal does not search by
-        #~ default (FreeBSD's sits in /usr/local/share/aclocal, which it does),
-        #~ and the prepare mirrors it into /usr/local as well.
-        export ACLOCAL_PATH="/usr/pkg/share/aclocal${ACLOCAL_PATH:+:$ACLOCAL_PATH}"
-        perl -V
-        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
-        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
-        #~ install aborts the whole run even though it succeeded. cpanm lands in
-        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
-        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
-        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
-        perl /tmp/cpanmin.pl App::cpanminus
-        rm -f /tmp/cpanmin.pl
-        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
-        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
-        #~ the real gcc when there is no /usr/bin/cc.
-        gcc_path=$(command -v gcc 2>/dev/null || true)
-        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
-        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
-        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
-        command -v cpanm
-        export XMAKE_ROOT=y
-        cpanm --notest IO::Socket::SSL
-        cpanm -v --with-recommends .
-      #~ gmake is what actually unblocks this leg: Alien::Xmake refuses to build
-      #~ Xmake from its source bundle on a BSD unless gmake is on PATH (BSD make
-      #~ generates makefiles Xmake cannot use, and the builder checks for it), so
-      #~ without it `cpanm Alien::Xmake` dies with "We could not find the
-      #~ necessary tools (make, compiler)" even though cc and make are present.
-      #~ perl is not in the base system image at all, hence the pkgsrc install.
-      #~ The branch is spelled 10.0, but the mirror redirects that to the live
-      #~ rolling 10.0_2026Q3 All/ set (the quarterly snapshots go away).
-      #~ This image is installed without X11 (that is the sysinst profile the
-      #~ prebuilt VM carries), so /usr/X11R7 is absent and pkgsrc's X11 packages
-      #~ are built against the base X11 that is missing -- installing them only
-      #~ leaves dangling .pc symlinks, and the one that carries them (x11-links)
-      #~ refuses to install at all because its osabi-NetBSD-10.0 dependency sees
-      #~ the image report 10.1. xrepo has no system lookup for the libx11/libxcb
-      #~ family on the BSDs, so without base X11 the from-source libsdl3 build
-      #~ bootstraps the whole X11 stack from source and dies at libx11, whose
-      #~ recipe links -ldl and NetBSD has no libdl (dlopen lives in libc).
-      #~ Instead of stubbing that out, unpack the release's own X11 sets: xbase
-      #~ carries the shared libraries and their .so dev symlinks, xcomp the
-      #~ headers and pkg-config files. They come from archive.netbsd.org's
-      #~ NetBSD-archive tree, the permanently archived release (ftp.netbsd.org
-      #~ already 404s the 10.1 sets), and the task points pkg-config and cmake at
-      #~ /usr/X11R7 so the whole libx11 family resolves from the system, exactly
-      #~ as on FreeBSD. Only libxss and xorgproto still build from source: xmake
-      #~ matches a dependency to xss.pc / xorgproto.pc, and X11R7 ships the same
-      #~ libraries under the names xscrnsaver.pc and xproto.pc, so those two
-      #~ lookups miss. xorgproto's tarball carries a pregenerated configure, but
-      #~ libxss's does not, so xmake regenerates it with its own autoconf/
-      #~ automake/libtool and the generated configure needs the PKG_PROG_PKG_CONFIG
-      #~ macro from pkg.m4 (pkgsrc keeps it in /usr/pkg/share/aclocal, which
-      #~ aclocal does not search by default, hence the ACLOCAL_PATH fallback
-      #~ above). The prepare also aliases xss.pc to xscrnsaver.pc, which makes
-      #~ libXss resolve from the system and skips that source build entirely. m4
-      #~ is installed from pkgsrc because the base image has none and xmake's
-      #~ autoconf needs it. curl is named explicitly because the base image has
-      #~ none (only ftp) and both the set download and the task use it.
-      matrix: >
-        [
-          {"platform_name":"netbsd","os":"netbsd","arch":"x86_64","toolchain":"gcc","prepare":"export PATH=/usr/pkg/bin:/usr/pkg/sbin:$PATH; set -e; export PKG_PATH=https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/10.0/All; /usr/sbin/pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf m4 curl; mkdir -p /usr/local/share/aclocal /usr/share/aclocal; ln -sf /usr/pkg/share/aclocal/pkg.m4 /usr/local/share/aclocal/pkg.m4; ln -sf /usr/pkg/share/aclocal/pkg.m4 /usr/share/aclocal/pkg.m4; for s in xbase xcomp; do curl -fsSL https://archive.netbsd.org/pub/NetBSD-archive/NetBSD-10.1/amd64/binary/sets/$s.tar.xz -o /tmp/$s.tar.xz; xz -dc /tmp/$s.tar.xz | tar -xpf - -C /; rm -f /tmp/$s.tar.xz; done; ln -sf xscrnsaver.pc /usr/X11R7/lib/pkgconfig/xss.pc"}
-        ]
-
-  dragonflybsd:
-    name: DragonFly BSD
-    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
-    secrets: inherit
-    with:
-      os_version: '6.4.0'
-      task: |
-        perl -V
-        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
-        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
-        #~ install aborts the whole run even though it succeeded. cpanm lands in
-        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
-        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
-        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
-        perl /tmp/cpanmin.pl App::cpanminus
-        rm -f /tmp/cpanmin.pl
-        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
-        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
-        #~ the real gcc when there is no /usr/bin/cc.
-        gcc_path=$(command -v gcc 2>/dev/null || true)
-        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
-        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
-        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
-        command -v cpanm
-        export XMAKE_ROOT=y
-        cpanm --notest IO::Socket::SSL
-        cpanm -v --with-recommends .
-      #~ The X11 development libraries are the difference between a green leg
-      #~ and one that bootstraps the whole X11 stack from source: xrepo has no
-      #~ system lookup for libxcb and friends on the BSDs, and building libxcb
-      #~ from source pulls in a from-source python (xcbgen). That python build
-      #~ fails on DragonFly, which is where this leg stopped. Best-effort: the
-      #~ names are dports', and a leg that is missing one still has to be able to
-      #~ report its real failure rather than a broken prepare.
-      matrix: >
-        [
-          {"platform_name":"dragonflybsd","os":"dragonflybsd","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5","prepare":"pkg update && pkg upgrade -y && pkg install -y perl5 gcc curl gmake libunistring git cmake ninja unzip pkgconf && (pkg install -y libX11 libxcb libXext libXfixes libXcursor libXrandr libXi libXrender libXScrnSaver libxkbcommon wayland xorgproto || echo 'note: some X11 development packages are unavailable in dports')"}
-        ]
-
   linux:
     name: Linux
     secrets: inherit
@@ -263,26 +122,78 @@ jobs:
         curl -L https://cpanmin.us | perl - App::cpanminus
         command -v cpanm
         cpanm -v --with-recommends .
-
+  netbsd:
+    name: NetBSD
+    secrets: inherit
+    uses: sanko/workflow-testing/.github/workflows/run-vm.yml@main
+    with:
+      matrix: |
+        [
+          {"platform_name":"netbsd","os":"netbsd","arch":"x86_64","toolchain":"gcc","prepare":"export PATH=/usr/pkg/bin:/usr/pkg/sbin:$PATH; set -e; export PKG_PATH=https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/x86_64/10.0/All; /usr/sbin/pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf m4 curl; mkdir -p /usr/local/share/aclocal /usr/share/aclocal; ln -sf /usr/pkg/share/aclocal/pkg.m4 /usr/local/share/aclocal/pkg.m4; ln -sf /usr/pkg/share/aclocal/pkg.m4 /usr/share/aclocal/pkg.m4; for s in xbase xcomp; do curl -fsSL https://archive.netbsd.org/pub/NetBSD-archive/NetBSD-10.1/amd64/binary/sets/$s.tar.xz -o /tmp/$s.tar.xz; xz -dc /tmp/$s.tar.xz | tar -xpf - -C /; rm -f /tmp/$s.tar.xz; done; ln -sf xscrnsaver.pc /usr/X11R7/lib/pkgconfig/xss.pc"}
+        ]
+      os_version: 10.1
+      task: |
+        #~ Perl comes from pkgsrc, not from the base system, so put /usr/pkg/bin
+        #~ in front before anything looks for perl. The image's login PATH
+        #~ already carries that directory; this only makes the dependency
+        #~ explicit for anything that re-execs a bare `perl`.
+        export PATH="/usr/pkg/bin:/usr/pkg/sbin:$PATH"
+        #~ The VM image is installed without X11, so the prepare unpacks the
+        #~ release's xbase/xcomp sets into /usr/X11R7. That prefix is in neither
+        #~ pkgconf's nor cmake's default search path, so point both at it (the
+        #~ .pc files carry the -I/-L for the compiler); without this the
+        #~ from-source libsdl3 build cannot see the system X11 and bootstraps
+        #~ the whole stack instead.
+        export PKG_CONFIG_PATH="/usr/X11R7/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+        export CMAKE_PREFIX_PATH="/usr/X11R7${CMAKE_PREFIX_PATH:+:$CMAKE_PREFIX_PATH}"
+        #~ xmake matches a dependency to a pkg-config file named after the
+        #~ package with any leading "lib" stripped, so libx11 matches x11.pc and
+        #~ libxss matches xss.pc. X11R7 carries the XScrnSaver library but names
+        #~ its file xscrnsaver.pc, so libxss would not match and xmake would
+        #~ rebuild it from source, pulling in its own autoconf/automake/libtool
+        #~ (which cannot find pkgsrc's pkg.m4 and dies with "PKG_PROG_PKG_CONFIG:
+        #~ not found"). The prepare aliases xss.pc to xscrnsaver.pc so libXss
+        #~ resolves from the system like the rest of the family. ACLOCAL_PATH is
+        #~ kept as a fallback for a from-source autotools package: pkgsrc keeps
+        #~ pkg.m4 in /usr/pkg/share/aclocal, which aclocal does not search by
+        #~ default (FreeBSD's sits in /usr/local/share/aclocal, which it does),
+        #~ and the prepare mirrors it into /usr/local as well.
+        export ACLOCAL_PATH="/usr/pkg/share/aclocal${ACLOCAL_PATH:+:$ACLOCAL_PATH}"
+        perl -V
+        #~ Bootstrap cpanm via a file download, never `curl | perl`: some remote
+        #~ sh's run under pipefail, and curl's EPIPE (23) after a clean pipe
+        #~ install aborts the whole run even though it succeeded. cpanm lands in
+        #~ the active perl's sitebin/scriptdir, which is not on PATH everywhere
+        #~ (Solaris/OmniOS site bin), so re-export those dirs first.
+        curl -fsSL https://cpanmin.us -o /tmp/cpanmin.pl
+        perl /tmp/cpanmin.pl App::cpanminus
+        rm -f /tmp/cpanmin.pl
+        export PATH="$(dirname "$(perl -e 'print $^X')"):$(perl -MConfig -e 'print "$Config{sitebin}:$Config{scriptdir}:"' 2>/dev/null):$PATH"
+        #~ Alien::Xmake probes `cc` first, then gcc/clang: point /usr/bin/cc at
+        #~ the real gcc when there is no /usr/bin/cc.
+        gcc_path=$(command -v gcc 2>/dev/null || true)
+        if [ -n "$gcc_path" ] && [ ! -e /usr/bin/cc ]; then ln -sf "$gcc_path" /usr/bin/cc 2>/dev/null || true; fi
+        echo "cc=$(command -v cc || true) gcc=$(command -v gcc || true) make=$(command -v make || true) gmake=$(command -v gmake || true)"
+        echo 'int main(){return 0;}' | cc -xc - -o /dev/null - 2>/dev/null && echo 'cc compile OK' || echo 'cc compile FAILED'
+        command -v cpanm
+        export XMAKE_ROOT=y
+        cpanm --notest IO::Socket::SSL
+        cpanm -v --with-recommends .
+  results:
+    if: always()
+    name: Summary
+    needs:
+      - linux
+      - macos
+      - windows
+      - windows-nocc
+      - syslibs
+    uses: sanko/workflow-testing/.github/workflows/results-summary.yml@main
   syslibs:
     name: Pre-installed libraries
     secrets: inherit
     uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
     with:
-      #~ One entry per platform and nothing else: this leg is about the package
-      #~ manager's SDL3, not about the perl/toolchain matrix, and a second
-      #~ compiler or arch would double an already slow run (vcpkg builds the
-      #~ whole family from source on Windows) for no new coverage.
-      #~ perl_version/prepare are still required, not decoration: Alien::Xmake
-      #~ declares requires 'perl', 'v5.40.0', so an image perl older than that
-      #~ (Ubuntu 24.04 ships 5.38.2) makes cpanm bail with "Your Perl (5.038002)
-      #~ is not in the range 'v5.40.0'" and take the whole toolchain down with
-      #~ it. Ubuntu therefore gets the same source-built 5.40.5 the linux job
-      #~ uses, macOS the same 5.42.3, and Windows gets Strawberry through
-      #~ choco in `prepare` -- with perl_version unset, run-direct asserts the
-      #~ active perl is native (MSWin32) rather than the MSYS perl that
-      #~ git-bash puts first on PATH, and that check needs C:\Strawberry to
-      #~ exist.
       matrix: |
         [
           {"name":"Linux   - Intel","platform_name":"ubuntu","os":"ubuntu-latest","arch":"x86_64","toolchain":"gcc","perl_version":"5.40.5"},
@@ -399,28 +310,11 @@ jobs:
           }
           exit($bad ? 1 : 0);
         '
-
-  results:
-    if: always()
-    name: Summary
-    needs:
-      - linux
-      - macos
-      - windows
-      - windows-nocc
-      - syslibs
-    uses: sanko/workflow-testing/.github/workflows/results-summary.yml@main
   windows:
     name: Windows
     secrets: inherit
     uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
     with:
-      #~ The windows-arm leg runs an x64 Strawberry Perl under emulation: there
-      #~ is no arm64 Perl distribution, so every Windows leg builds against the
-      #~ x86_64 prebuilt SDL3 DLLs and the ARM job proves the recipe works on
-      #~ the ARM runner rather than producing native arm64 binaries. `arch`
-      #~ stays aarch64 (it describes the runner and keeps the job name unique)
-      #~ and `variant: x64` records what actually gets built.
       matrix: |
         [
           {"platform_name":"windows","os":"windows-latest","arch":"x86_64","toolchain":"gcc","prepare":"choco install strawberryperl"},
@@ -439,20 +333,8 @@ jobs:
           chmod -R u+w "$XGL/templates" || true
         fi
         cpanm -v --with-recommends .
-
-  #~ A Windows leg with nothing but Strawberry Perl installed: no vcpkg, no
-  #~ LLVM, no `make`, no MSVC via `choco`. libsdl3/xmake.lua installs the whole
-  #~ SDL3 family on Windows from SDL's official prebuilt release archives (the
-  #~ flavour still follows the toolchain -- MinGW here -- and on_test links
-  #~ against the gcc that ships inside Strawberry), so this leg is what says the
-  #~ dist needs neither a package manager nor a from-source compile to work. It
-  #~ is distinct from the `syslibs` Windows leg, which installs vcpkg first and
-  #~ therefore covers the system/extsource path instead.
-  #~ perl_version stays unset so run-direct uses the runner's native Strawberry
-  #~ perl and asserts the active interpreter is MSWin32 rather than the git-bash
-  #~ MSYS perl; and with toolchain gcc its MSVC setup step is skipped.
   windows-nocc:
-    name: Windows (prebuilt, Perl only)
+    name: 'Windows (prebuilt, Perl only)'
     secrets: inherit
     uses: sanko/workflow-testing/.github/workflows/run-direct.yml@main
     with:
@@ -489,7 +371,6 @@ jobs:
           }
           exit($bad ? 1 : 0);
         '
-
 name: CI
 on:
   pull_request: ~
