@@ -118,6 +118,10 @@
       "SDL3::Mixer" : {
          "file" : "lib/SDL3/Mixer.pm",
          "version" : "v0.0.6"
+      },
+      "SDL3::TTF" : {
+         "file" : "lib/SDL3/TTF.pm",
+         "version" : "v0.0.1"
       }
    },
    "release_status" : "testing",
