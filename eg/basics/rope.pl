@@ -1,6 +1,7 @@
 use v5.40;
 use feature 'class';
 no warnings 'experimental::class';
+use lib '../../lib';
 use SDL3 qw[:all];
 $|++;
 

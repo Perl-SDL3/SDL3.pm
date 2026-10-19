@@ -45,3 +45,5 @@ pod2htmd.tmp
 SDL3.html
 
 *.ps1
+
+eg/voxel/
