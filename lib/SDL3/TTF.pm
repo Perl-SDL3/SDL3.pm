@@ -1,4 +1,4 @@
-package SDL3::TTF v0.0.1 {
+package SDL3::TTF v0.0.6 {
     use v5.40;
     use base 'Exporter';
     use Affix qw[:all];
@@ -297,8 +297,13 @@ will have access to with this import tag.
             engine              => Pointer [ TTF_TextEngine() ],
             engine_text         => Pointer [Void]
         ];
-        _typedef_and_export TTF_Text       => Void;
-        _typedef_and_export TTF_TextEngine => Void;
+        _typedef_and_export TTF_Text => Struct [ text => String, num_lines => Int, refcount => Int, internal => Pointer [ TTF_TextData() ] ];
+        _typedef_and_export TTF_TextEngine => Struct [
+            version     => UInt32,
+            userdata    => Pointer [Void],
+            CreateText  => Callback [ [ Pointer [Void], Pointer [ TTF_Text() ] ] => Bool ],
+            DestroyText => Callback [ [ Pointer [Void], Pointer [ TTF_Text() ] ] => Void ]
+        ];
         _affix_and_export TTF_CreateSurfaceTextEngine                => [], Pointer [ TTF_TextEngine() ];
         _affix_and_export TTF_DrawSurfaceText                        => [ Pointer [ TTF_Text() ], Int, Int, Pointer [ SDL_Surface() ] ], Bool;
         _affix_and_export TTF_DestroySurfaceTextEngine               => [ Pointer [ TTF_TextEngine() ] ], Void;

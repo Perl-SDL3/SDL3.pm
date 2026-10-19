@@ -1,4 +1,4 @@
-package SDL3::Image v0.0.1 {
+package SDL3::Image v0.0.6 {
     use v5.40;
     use base 'Exporter';
     use Affix qw[:all];
@@ -6,56 +6,6 @@ package SDL3::Image v0.0.1 {
     use SDL3   qw[:all];
     use Carp   qw[croak confess];
     use Config qw[%Config];
-
-=encoding utf-8
-
-=head1 NAME
-
-SDL3::Image - Image Loading support for SDL3
-
-=head1 SYNOPSIS
-
-    use v5.40;
-    use SDL3        qw[:all :main];
-    use SDL3::Image qw[:all];
-
-    my $surface = IMG_Load('sprite.png');
-    die SDL_GetError() unless $surface;
-
-    # Or decode straight into a texture the renderer can draw
-    my $texture = IMG_LoadTexture( $renderer, 'background.jpg' );
-
-=head1 DESCRIPTION
-
-C<SDL3::Image> binds SDL_image, a simple library to load images of various formats as SDL surfaces.
-
-It can load C<BMP>, C<GIF>, C<JPEG>, C<LBM>, C<PCX>, C<PNG>, C<PNM> (PPM/PGM/PBM), C<QOI>, C<TGA>, C<XCF>, C<XPM>, and
-simple C<SVG> format images. It can also load C<AVIF>, C<JPEG-XL>, C<TIFF>, and C<WebP> images, depending on how the
-underlying library was built.
-
-Decoded pixels are returned as an C<SDL_Surface> (see L<SDL3>) that you can blit, convert, or turn into a texture with
-C<SDL_CreateTextureFromSurface( ... )>. When a renderer is already available, C<IMG_LoadTexture( ... )> uploads the
-pixels straight into an C<SDL_Texture>. Every loader has an C<*_IO> variant that reads from an C<SDL_IOStream>, so
-images can be decoded from memory, a storage container, or any other stream.
-
-Animated images (C<GIF>, C<WebP>, C<AVIF>, C<ANI>, ...) can be decoded frame by frame with an C<IMG_AnimationDecoder>,
-and embedded metadata is exposed as SDL properties on the loaded surface or animation.
-
-There are a few examples in this distribution's C<eg/image> directory.
-
-=head2 Features
-
-Each feature listed below is a tag you may use.
-
-=head3 C<:all> - SDL3_image Functions
-
-This binds all functions, defines all types, and imports them into your package.
-
-See L<the SDL3_image Wiki|https://wiki.libsdl.org/SDL3_image/FrontPage> for documentation of the functions and formats
-you will have access to with this import tag.
-
-=cut
-
     my $alien = Alien::SDL3->new;
     my $info  = $alien->alt('libsdl3_image')->package_info;
     croak 'SDL3_image is not installed' unless $info;
@@ -113,6 +63,12 @@ you will have access to with this import tag.
             }
         }
     }
+
+=head3 C<:all> - SDL3_image Functions
+
+All functions and constants provided by SDL3_image.
+
+=cut
 
     sub _image () {
         state $done++ && return;
@@ -279,34 +235,3 @@ you will have access to with this import tag.
     }
 }
 1;
-
-=head1 See Also
-
-The project's repo: L<https://github.com/Perl-SDL3/>
-
-The SDL3_image Wiki: L<https://wiki.libsdl.org/SDL3_image/FrontPage>
-
-L<SDL3>
-
-L<Affix>
-
-=head1 LICENSE
-
-This software is Copyright (c) 2026 by Sanko Robinson.
-
-This is free software, licensed under:
-
-  The Artistic License 2.0 (GPL Compatible)
-
-See the F<LICENSE> file for full text.
-
-=head1 AUTHOR
-
-Sanko Robinson L<https://github.com/sanko>
-
-=begin stopwords
-
-
-=end stopwords
-
-=cut

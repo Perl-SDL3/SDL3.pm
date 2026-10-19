@@ -117,7 +117,7 @@
       },
       "SDL3::Image" : {
          "file" : "lib/SDL3/Image.pm",
-         "version" : "v0.0.1"
+         "version" : "v0.0.6"
       },
       "SDL3::Mixer" : {
          "file" : "lib/SDL3/Mixer.pm",
@@ -125,7 +125,7 @@
       },
       "SDL3::TTF" : {
          "file" : "lib/SDL3/TTF.pm",
-         "version" : "v0.0.1"
+         "version" : "v0.0.6"
       }
    },
    "release_status" : "testing",
