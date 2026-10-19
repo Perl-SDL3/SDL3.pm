@@ -65,15 +65,16 @@ C<MIX_LoadAudioWithProperties( ... )>. Data gets loaded once and can be played o
 When loading audio, SDL_mixer can parse out several metadata tag formats, such as ID3 and APE tags, and exposes this
 information through the C<MIX_GetAudioProperties( ... )> function.
 
-To play audio, you create a track with MIX_CreateTrack(). You need one track for each sound that will be played
-simultaneously; think of tracks as individual sliders on a mixer board. You might have loaded hundreds of audio files,
-but you probably only have a handful of tracks that you assign those loaded files to when they are ready to play, and
-reuse those tracks with different audio later. Tracks take their input from a MIX_Audio (static data to be played
-multiple times) or an SDL_AudioStream (streaming PCM audio the app supplies, possibly as needed). A third option is to
-supply an SDL_IOStream, to load and decode on the fly, which might be more efficient for background music that is only
-used once, etc.
+To play audio, you create a track with C<MIX_CreateTrack( [...] )>. You need one track for each sound that will be
+played simultaneously; think of tracks as individual sliders on a mixer board. You might have loaded hundreds of audio
+files, but you probably only have a handful of tracks that you assign those loaded files to when they are ready to
+play, and reuse those tracks with different audio later. Tracks take their input from a C<MIX_Audio> (static data to be
+played multiple times) or an C<SDL_AudioStream> (streaming PCM audio the app supplies, possibly as needed). A third
+option is to supply an C<SDL_IOStream>, to load and decode on the fly, which might be more efficient for background
+music that is only used once, etc.
 
-Assign input to a MIX_Track with MIX_SetTrackAudio(), MIX_SetTrackAudioStream(), or MIX_SetTrackIOStream().
+Assign input to a C<MIX_Track> with C<MIX_SetTrackAudio( ... )>, C<MIX_SetTrackAudioStream( ... )>, or
+C<MIX_SetTrackIOStream( ... )>.
 
 Once a track has an input, start it playing with MIX_PlayTrack(). There are many options to this function to dictate
 mixing features: looping, fades, etc.
@@ -89,10 +90,10 @@ mixed audio about to be sent to the audio hardware to play. Additionally, you ca
 of playing tracks and access the data before it is mixed in with other tracks. All of this is optional, but allows for
 powerful access and control of the mixing process.
 
-SDL_mixer can also be used for decoding audio files without actually rendering a mix. This is done with
-MIX_AudioDecoder. Even though SDL_mixer handles decoding transparently when used as the audio engine for an app, and
-probably won't need this interface in that normal scenario, this can be useful when using a different audio library to
-access many file formats.
+C<SDL::Mixer> can also be used for decoding audio files without actually rendering a mix. This is done with
+C<MIX_AudioDecoder>. Even though C<SDL_mixer> handles decoding transparently when used as the audio engine for an app,
+and probably won't need this interface in that normal scenario, this can be useful when using a different audio library
+to access many file formats.
 
 This library offers several features on top of mixing sounds together: a track can have its own gain, to adjust its
 volume, in addition to a master gain applied as well. One can set the "frequency ratio" of a track or the final mixed
@@ -103,17 +104,17 @@ Almost all timing in SDL_mixer is in sample frames. Stereo PCM audio data in Sin
 frame (2 bytes per sample times 2 channels), for example. This allows everything in SDL_mixer to run at sample-perfect
 accuracy, and it lets it run without concern for wall clock time--you can produce audio faster than real-time, if
 desired. The problem, though, is different pieces of audio at different sample rates will produce a different number of
-sample frames for the same length of time. To deal with this, conversion routines are offered: MIX_TrackMSToFrames(),
-MIX_TrackFramesToMS(), etc. Functions that operate on multiple tracks at once will deal with time in milliseconds, so
-it can do these conversions internally; be sure to read the documentation for these small quirks!
+sample frames for the same length of time. To deal with this, conversion routines are offered: C<MIX_TrackMSToFrames(
+... )>, C<MIX_TrackFramesToMS( ... )>, etc. Functions that operate on multiple tracks at once will deal with time in
+milliseconds, so it can do these conversions internally; be sure to read the documentation for these small quirks!
 
-SDL_mixer offers basic positional audio: a simple 3D positioning API through MIX_SetTrack3DPosition() and
-MIX_SetTrackStereo(). The former will do simple distance attenuation and spatialization--on a stereo setup, you will
-hear sounds move from left to right--and on a surround-sound configuration, individual tracks can move around the user.
-The latter, MIX_SetTrackStereo(), will force a sound to the Front Left and Front Right speakers and let the app pan it
-left and right as desired. Either effect can be useful for different situations. SDL_mixer is not meant to be a full 3D
-audio engine, but rather Good Enough for many purposes; if something more powerful in terms of 3D audio is needed,
-consider a proper 3D library like OpenAL.
+C<SDL::Mixer> offers basic positional audio: a simple 3D positioning API through C<MIX_SetTrack3DPosition( ... )> and
+C<MIX_SetTrackStereo( ... )>. The former will do simple distance attenuation and spatialization--on a stereo setup, you
+will hear sounds move from left to right--and on a surround-sound configuration, individual tracks can move around the
+user. The latter, C<MIX_SetTrackStereo( ... )>, will force a sound to the Front Left and Front Right speakers and let
+the app pan it left and right as desired. Either effect can be useful for different situations. C<SDL::Mixer> is not
+meant to be a full 3D audio engine, but rather Good Enough for many purposes; if something more powerful in terms of 3D
+audio is needed, consider a proper 3D library like OpenAL.
 
 There are a few examples in this distribution's C<eg/mixer> directory.
 
