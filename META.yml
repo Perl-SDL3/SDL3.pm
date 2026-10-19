@@ -5,7 +5,7 @@ author:
   - 'Sanko Robinson'
 build_requires:
   Affix: v1.2.7
-  Alien::SDL3: '0'
+  Alien::SDL3: v3.4.21
   IPC::Cmd: '0'
   TAP::Harness::Env: '0'
   Test2::Plugin::UTF8: '0'
@@ -58,7 +58,7 @@ provides:
     version: v0.0.6
 requires:
   Affix: v1.2.7
-  Alien::SDL3: '0'
+  Alien::SDL3: v3.4.21
   Carp: '0'
   Data::Dump: '0'
   perl: v5.40.0
