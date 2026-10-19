@@ -1,7 +1,11 @@
 package SDL3::Mixer v0.0.6 {
     use v5.40;
     use base 'Exporter';
-    use SDL3  qw[:mixer];
+    use Affix qw[:all];
+    use Alien::SDL3;
+    use SDL3;    # Needs core types...
+    use Carp   qw[confess croak];
+    use Config qw[%Config];
 
 =encoding utf-8
 
@@ -116,18 +120,51 @@ There are a few examples in this distribution's C<eg/mixer> directory.
 =cut
 
     my $alien = Alien::SDL3->new;
-    my $mixer = $alien->alt('libsdl3_mixer')->package_info;
-    croak 'Could not find library' unless $mixer;
-
-    #~ use Data::Dumper;
-    my ( $lib, @etc ) = @{ $mixer->libfiles };
-
-    #~ print Dumper $mixer->runtime_deps;
-    $ENV{PATH} = join( ';', ( map { @{ $_->bindirs // [] } } $mixer ), $ENV{PATH} );
-
-    #~ Affix::load_library($_) or die 'Could not find ' . $_ for $lib, @etc;
+    my $info  = $alien->alt('libsdl3_mixer')->package_info;
+    croak 'SDL3_mixer is not installed' unless $info;
+    my ($lib) = @{ $info->libfiles };
+    $ENV{PATH} = join( $Config{path_sep}, ( map { @{ $_->bindirs // [] } } $info ), $ENV{PATH} // '' );
     our ( %EXPORT_TAGS, @EXPORT_OK );
 
+    sub import ( $pkg, @wants ) {
+        {
+            no strict 'refs';
+            (s[^:][_]r)->() for @wants;
+        }
+        require List::Util;
+        @EXPORT_OK = sort map {@$_} values %EXPORT_TAGS;
+        $EXPORT_TAGS{all} = [@EXPORT_OK];
+        __PACKAGE__->export_to_level( 1, $pkg, @wants );
+    }
+
+    sub _affix_and_export ( $name, $args, $ret ) {
+        my ( $n, $r ) = ref $name ? @$name : ( $name, $name );
+        confess "Failed to affix $n" unless affix( $lib, $name, $args, $ret );
+        push @{ $EXPORT_TAGS{ [ caller(1) ]->[3] =~ s/^.+?_//r } }, $n;
+    }
+
+    sub _const_and_export ( $name, $value ) {
+        no strict 'refs';
+        *{$name} = sub () {$value};
+        push @{ $EXPORT_TAGS{ [ caller(1) ]->[3] =~ s/^.+?_//r } }, $name;
+    }
+
+    sub _func_and_export ( $name, $sub ) {
+        no strict 'refs';
+        *{$name} = $sub;
+        push @{ $EXPORT_TAGS{ [ caller(1) ]->[3] =~ s/^.+?_//r } }, $name;
+    }
+
+    sub _typedef_and_export ( $name, $type //= () ) {
+        no strict 'refs';
+        if ( defined $type ) {
+            typedef $name, $type;
+        }
+        else {
+            typedef $name;
+        }
+        push @{ $EXPORT_TAGS{ [ caller(1) ]->[3] =~ s/^.+?_//r } }, $name;
+    }
 
 =head2 Constants
 
@@ -148,6 +185,180 @@ Each function listed below is imported with the C<:all> tag or by name.
 
 =cut
 
+=head3 C<:mixer> - SDL3_mixer Audio Functions
+
+All functions and constants provided by SDL3_mixer.
+
+=cut
+
+    sub _mixer () {
+        state $done++ && return;
+        _typedef_and_export MIX_Mixer        => Void;
+        _typedef_and_export MIX_Audio        => Void;
+        _typedef_and_export MIX_Track        => Void;
+        _typedef_and_export MIX_Group        => Void;
+        _typedef_and_export MIX_AudioDecoder => Void;
+        _affix_and_export MIX_Version => [], Int;
+        _func_and_export MIX_MAJOR_VERSION    => sub () { SDL3::SDL_VERSIONNUM_MAJOR( MIX_Version() ) };
+        _func_and_export MIX_MINOR_VERSION    => sub () { SDL3::SDL_VERSIONNUM_MINOR( MIX_Version() ) };
+        _func_and_export MIX_MICRO_VERSION    => sub () { SDL3::SDL_VERSIONNUM_MICRO( MIX_Version() ) };
+        _func_and_export MIX_VERSION          => sub () { SDL3::SDL_VERSIONNUM( MIX_MAJOR_VERSION(), MIX_MINOR_VERSION(), MIX_MICRO_VERSION() ) };
+        _func_and_export MIX_VERSIONNUM       => sub ( $major, $minor, $patch ) { ( ($major) * 1000000 + ($minor) * 1000 + ($patch) ) };
+        _func_and_export MIX_VERSIONNUM_MAJOR => sub ($version) { int( ($version) / 1000000 ) };
+        _func_and_export MIX_VERSIONNUM_MINOR => sub ($version) { int( ( ($version) / 1000 ) % 1000 ) };
+        _func_and_export MIX_VERSIONNUM_MICRO => sub ($version) { int( ($version) % 1000 ) };
+        _func_and_export MIX_VERSION_ATLEAST  => sub ( $X, $Y, $Z ) { ( MIX_VERSION() >= MIX_VERSIONNUM( $X, $Y, $Z ) ) };
+        _affix_and_export MIX_Init                => [], Bool;
+        _affix_and_export MIX_Quit                => [], Void;
+        _affix_and_export MIX_GetNumAudioDecoders => [], Int;
+        _affix_and_export MIX_GetAudioDecoder     => [Int], String;
+        _affix_and_export MIX_CreateMixerDevice   => [ UInt32, Pointer [Void] ], Pointer [ MIX_Mixer() ];
+        _affix_and_export MIX_CreateMixer         => [ Pointer [Void] ], Pointer [ MIX_Mixer() ];
+        _affix_and_export MIX_DestroyMixer        => [ Pointer [ MIX_Mixer() ] ], Void;
+        _affix_and_export MIX_GetMixerProperties  => [ Pointer [ MIX_Mixer() ] ], SDL3::SDL_PropertiesID();
+        _const_and_export MIX_PROP_MIXER_DEVICE_NUMBER => 'SDL_mixer.mixer.device';
+        _affix_and_export MIX_GetMixerFormat  => [ Pointer [ MIX_Mixer() ], Pointer [ SDL3::SDL_AudioSpec() ] ], Bool;
+        _affix_and_export MIX_LockMixer       => [ Pointer [ MIX_Mixer() ] ], Void;
+        _affix_and_export MIX_UnlockMixer     => [ Pointer [ MIX_Mixer() ] ], Void;
+        _affix_and_export MIX_LoadAudio_IO    => [ Pointer [ MIX_Mixer() ], Pointer [ SDL3::SDL_IOStream() ], Bool, Bool ], Pointer [ MIX_Audio() ];
+        _affix_and_export MIX_LoadAudio       => [ Pointer [ MIX_Mixer() ], String, Bool ], Pointer [ MIX_Audio() ];
+        _affix_and_export MIX_LoadAudioNoCopy => [ Pointer [ MIX_Mixer() ], Pointer [Void], Size_t, Bool ], Pointer [ MIX_Audio() ];
+        _affix_and_export MIX_LoadAudioWithProperties => [ SDL3::SDL_PropertiesID() ], Pointer [ MIX_Audio() ];
+        _const_and_export MIX_PROP_AUDIO_LOAD_IOSTREAM_POINTER           => 'SDL_mixer.audio.load.iostream';
+        _const_and_export MIX_PROP_AUDIO_LOAD_CLOSEIO_BOOLEAN            => 'SDL_mixer.audio.load.closeio';
+        _const_and_export MIX_PROP_AUDIO_LOAD_PREDECODE_BOOLEAN          => 'SDL_mixer.audio.load.predecode';
+        _const_and_export MIX_PROP_AUDIO_LOAD_PREFERRED_MIXER_POINTER    => 'SDL_mixer.audio.load.preferred_mixer';
+        _const_and_export MIX_PROP_AUDIO_LOAD_SKIP_METADATA_TAGS_BOOLEAN => 'SDL_mixer.audio.load.skip_metadata_tags';
+        _const_and_export MIX_PROP_AUDIO_LOAD_IGNORE_LOOPS_BOOLEAN       => 'SDL_mixer.audio.load.ignore_loops';
+        _const_and_export MIX_PROP_AUDIO_DECODER_STRING                  => 'SDL_mixer.audio.decoder';
+        _affix_and_export
+            MIX_LoadRawAudio_IO => [ Pointer [ MIX_Mixer() ], Pointer [ SDL3::SDL_IOStream() ], Pointer [ SDL3::SDL_AudioSpec() ], Bool ],
+            Pointer [ MIX_Audio() ];
+        _affix_and_export
+            MIX_LoadRawAudio => [ Pointer [ MIX_Mixer() ], Pointer [Void], Size_t, Pointer [ SDL3::SDL_AudioSpec() ] ],
+            Pointer [ MIX_Audio() ];
+        _affix_and_export
+            MIX_LoadRawAudioNoCopy => [ Pointer [ MIX_Mixer() ], Pointer [Void], Size_t, Pointer [ SDL3::SDL_AudioSpec() ], Bool ],
+            Pointer [ MIX_Audio() ];
+        _affix_and_export MIX_CreateSineWaveAudio => [ Pointer [ SDL3::SDL_AudioSpec() ], Int, Float, SInt64 ], Pointer [ MIX_Audio() ];
+        _affix_and_export MIX_GetAudioProperties => [ Pointer [ MIX_Audio() ] ], SDL3::SDL_PropertiesID();
+        _const_and_export MIX_PROP_METADATA_TITLE_STRING              => "SDL_mixer.metadata.title";
+        _const_and_export MIX_PROP_METADATA_ARTIST_STRING             => "SDL_mixer.metadata.artist";
+        _const_and_export MIX_PROP_METADATA_ALBUM_STRING              => "SDL_mixer.metadata.album";
+        _const_and_export MIX_PROP_METADATA_COPYRIGHT_STRING          => "SDL_mixer.metadata.copyright";
+        _const_and_export MIX_PROP_METADATA_TRACK_NUMBER              => "SDL_mixer.metadata.track";
+        _const_and_export MIX_PROP_METADATA_TOTAL_TRACKS_NUMBER       => "SDL_mixer.metadata.total_tracks";
+        _const_and_export MIX_PROP_METADATA_YEAR_NUMBER               => "SDL_mixer.metadata.year";
+        _const_and_export MIX_PROP_METADATA_DURATION_FRAMES_NUMBER    => "SDL_mixer.metadata.duration_frames";
+        _const_and_export MIX_PROP_METADATA_DURATION_INFINITE_BOOLEAN => "SDL_mixer.metadata.duration_infinite";
+        _affix_and_export MIX_GetAudioDuration => [ Pointer [ MIX_Audio() ] ], SInt64;
+        _const_and_export MIX_DURATION_UNKNOWN  => -1;
+        _const_and_export MIX_DURATION_INFINITE => -2;
+        _affix_and_export MIX_GetAudioFormat      => [ Pointer [ MIX_Audio() ], Pointer [ SDL3::SDL_AudioSpec() ] ], Bool;
+        _affix_and_export MIX_DestroyAudio        => [ Pointer [ MIX_Audio() ] ], Void;
+        _affix_and_export MIX_CreateTrack         => [ Pointer [ MIX_Mixer() ] ], Pointer [ MIX_Track() ];
+        _affix_and_export MIX_DestroyTrack        => [ Pointer [ MIX_Track() ] ], Void;
+        _affix_and_export MIX_GetTrackProperties  => [ Pointer [ MIX_Track() ] ], SDL3::SDL_PropertiesID();
+        _affix_and_export MIX_GetTrackMixer       => [ Pointer [ MIX_Track() ] ], Pointer [ MIX_Mixer() ];
+        _affix_and_export MIX_SetTrackAudio       => [ Pointer [ MIX_Track() ], Pointer [ MIX_Audio() ] ],             Bool;
+        _affix_and_export MIX_SetTrackAudioStream => [ Pointer [ MIX_Track() ], Pointer [ SDL3::SDL_AudioStream() ] ], Bool;
+        _affix_and_export MIX_SetTrackIOStream    => [ Pointer [ MIX_Track() ], Pointer [ SDL3::SDL_IOStream() ], Bool ], Bool;
+        _affix_and_export
+            MIX_SetTrackRawIOStream => [ Pointer [ MIX_Track() ], Pointer [ SDL3::SDL_IOStream() ], Pointer [ SDL3::SDL_AudioSpec() ], Bool ],
+            Bool;
+        _affix_and_export MIX_TagTrack                 => [ Pointer [ MIX_Track() ], String ], Bool;
+        _affix_and_export MIX_UntagTrack               => [ Pointer [ MIX_Track() ], String ], Void;
+        _affix_and_export MIX_GetTrackTags             => [ Pointer [ MIX_Track() ], Pointer [Int] ], Pointer [String];
+        _affix_and_export MIX_GetTaggedTracks          => [ Pointer [ MIX_Mixer() ], String, Pointer [Int] ], Pointer [ Pointer [ MIX_Track() ] ];
+        _affix_and_export MIX_SetTrackPlaybackPosition => [ Pointer [ MIX_Track() ], SInt64 ], Bool;
+        _affix_and_export MIX_GetTrackPlaybackPosition => [ Pointer [ MIX_Track() ] ], SInt64;
+        _affix_and_export MIX_GetTrackFadeFrames       => [ Pointer [ MIX_Track() ] ], SInt64;
+        _affix_and_export MIX_GetTrackLoops            => [ Pointer [ MIX_Track() ] ], Int;
+        _affix_and_export MIX_SetTrackLoops            => [ Pointer [ MIX_Track() ], Int ], Bool;
+        _affix_and_export MIX_GetTrackAudio            => [ Pointer [ MIX_Track() ] ], Pointer [ MIX_Audio() ];
+        _affix_and_export MIX_GetTrackAudioStream      => [ Pointer [ MIX_Track() ] ], Pointer [ SDL3::SDL_AudioStream() ];
+        _affix_and_export MIX_GetTrackRemaining        => [ Pointer [ MIX_Track() ] ], SInt64;
+        _affix_and_export MIX_TrackMSToFrames          => [ Pointer [ MIX_Track() ], SInt64 ], SInt64;
+        _affix_and_export MIX_TrackFramesToMS          => [ Pointer [ MIX_Track() ], SInt64 ], SInt64;
+        _affix_and_export MIX_AudioMSToFrames          => [ Pointer [ MIX_Audio() ], SInt64 ], SInt64;
+        _affix_and_export MIX_AudioFramesToMS          => [ Pointer [ MIX_Audio() ], SInt64 ], SInt64;
+        _affix_and_export MIX_MSToFrames               => [ Int, SInt64 ], SInt64;
+        _affix_and_export MIX_FramesToMS               => [ Int, SInt64 ], SInt64;
+        _affix_and_export MIX_PlayTrack                => [ Pointer [ MIX_Track() ], SDL3::SDL_PropertiesID() ], Bool;
+        _const_and_export MIX_PROP_PLAY_LOOPS_NUMBER                       => "SDL_mixer.play.loops";
+        _const_and_export MIX_PROP_PLAY_MAX_FRAME_NUMBER                   => "SDL_mixer.play.max_frame";
+        _const_and_export MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER            => "SDL_mixer.play.max_milliseconds";
+        _const_and_export MIX_PROP_PLAY_START_FRAME_NUMBER                 => "SDL_mixer.play.start_frame";
+        _const_and_export MIX_PROP_PLAY_START_MILLISECOND_NUMBER           => "SDL_mixer.play.start_millisecond";
+        _const_and_export MIX_PROP_PLAY_START_ORDER_NUMBER                 => "SDL_mixer.play.start_order";
+        _const_and_export MIX_PROP_PLAY_LOOP_START_FRAME_NUMBER            => "SDL_mixer.play.loop_start_frame";
+        _const_and_export MIX_PROP_PLAY_LOOP_START_MILLISECOND_NUMBER      => "SDL_mixer.play.loop_start_millisecond";
+        _const_and_export MIX_PROP_PLAY_FADE_IN_FRAMES_NUMBER              => "SDL_mixer.play.fade_in_frames";
+        _const_and_export MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER        => "SDL_mixer.play.fade_in_milliseconds";
+        _const_and_export MIX_PROP_PLAY_FADE_IN_START_GAIN_FLOAT           => "SDL_mixer.play.fade_in_start_gain";
+        _const_and_export MIX_PROP_PLAY_APPEND_SILENCE_FRAMES_NUMBER       => "SDL_mixer.play.append_silence_frames";
+        _const_and_export MIX_PROP_PLAY_APPEND_SILENCE_MILLISECONDS_NUMBER => "SDL_mixer.play.append_silence_milliseconds";
+        _const_and_export MIX_PROP_PLAY_HALT_WHEN_EXHAUSTED_BOOLEAN        => "SDL_mixer.play.halt_when_exhausted";
+        _affix_and_export MIX_PlayTag                  => [ Pointer [ MIX_Mixer() ], String, SDL3::SDL_PropertiesID() ], Bool;
+        _affix_and_export MIX_PlayAudio                => [ Pointer [ MIX_Mixer() ], Pointer [ MIX_Audio() ] ], Bool;
+        _affix_and_export MIX_StopTrack                => [ Pointer [ MIX_Track() ], SInt64 ], Bool;
+        _affix_and_export MIX_StopAllTracks            => [ Pointer [ MIX_Mixer() ], SInt64 ], Bool;
+        _affix_and_export MIX_StopTag                  => [ Pointer [ MIX_Mixer() ], String, SInt64 ], Bool;
+        _affix_and_export MIX_PauseTrack               => [ Pointer [ MIX_Track() ] ], Bool;
+        _affix_and_export MIX_PauseAllTracks           => [ Pointer [ MIX_Mixer() ] ], Bool;
+        _affix_and_export MIX_PauseTag                 => [ Pointer [ MIX_Mixer() ], String ], Bool;
+        _affix_and_export MIX_ResumeTrack              => [ Pointer [ MIX_Track() ] ], Bool;
+        _affix_and_export MIX_ResumeAllTracks          => [ Pointer [ MIX_Mixer() ] ], Bool;
+        _affix_and_export MIX_ResumeTag                => [ Pointer [ MIX_Mixer() ], String ], Bool;
+        _affix_and_export MIX_TrackPlaying             => [ Pointer [ MIX_Track() ] ], Bool;
+        _affix_and_export MIX_TrackPaused              => [ Pointer [ MIX_Track() ] ], Bool;
+        _affix_and_export MIX_SetMixerGain             => [ Pointer [ MIX_Mixer() ], Float ], Bool;
+        _affix_and_export MIX_GetMixerGain             => [ Pointer [ MIX_Mixer() ] ], Float;
+        _affix_and_export MIX_SetTrackGain             => [ Pointer [ MIX_Track() ], Float ], Bool;
+        _affix_and_export MIX_GetTrackGain             => [ Pointer [ MIX_Track() ] ], Float;
+        _affix_and_export MIX_SetTagGain               => [ Pointer [ MIX_Mixer() ], String, Float ], Bool;
+        _affix_and_export MIX_SetMixerFrequencyRatio   => [ Pointer [ MIX_Mixer() ], Float ], Bool;
+        _affix_and_export MIX_GetMixerFrequencyRatio   => [ Pointer [ MIX_Mixer() ] ], Float;
+        _affix_and_export MIX_SetTrackFrequencyRatio   => [ Pointer [ MIX_Track() ], Float ], Bool;
+        _affix_and_export MIX_GetTrackFrequencyRatio   => [ Pointer [ MIX_Track() ] ], Float;
+        _affix_and_export MIX_SetTrackOutputChannelMap => [ Pointer [ MIX_Track() ], Pointer [Int], Int ], Bool;
+        _typedef_and_export MIX_StereoGains => Struct [ left => Float, right => Float ];
+        _affix_and_export MIX_SetTrackStereo => [ Pointer [ MIX_Track() ], Pointer [ MIX_StereoGains() ] ], Bool;
+        _typedef_and_export MIX_Point3D => Struct [ x => Float, y => Float, z => Float ];
+        _affix_and_export MIX_SetTrack3DPosition => [ Pointer [ MIX_Track() ], Pointer [ MIX_Point3D() ] ], Bool;
+        _affix_and_export MIX_GetTrack3DPosition => [ Pointer [ MIX_Track() ], Pointer [ MIX_Point3D() ] ], Bool;
+        _affix_and_export MIX_CreateGroup        => [ Pointer [ MIX_Mixer() ] ], Pointer [ MIX_Group() ];
+        _affix_and_export MIX_DestroyGroup       => [ Pointer [ MIX_Group() ] ], Void;
+        _affix_and_export MIX_GetGroupProperties => [ Pointer [ MIX_Group() ] ], SDL3::SDL_PropertiesID();
+        _affix_and_export MIX_GetGroupMixer      => [ Pointer [ MIX_Group() ] ], Pointer [ MIX_Mixer() ];
+        _affix_and_export MIX_SetTrackGroup      => [ Pointer [ MIX_Track() ], Pointer [ MIX_Group() ] ], Bool;
+        _typedef_and_export MIX_TrackStoppedCallback => Callback [ [ Pointer [Void], Pointer [ MIX_Track() ] ] => Void ];
+        _affix_and_export MIX_SetTrackStoppedCallback => [ Pointer [ MIX_Track() ], MIX_TrackStoppedCallback(), Pointer [Void] ], Bool;
+        _typedef_and_export MIX_TrackMixCallback =>
+            Callback [ [ Pointer [Void], Pointer [ MIX_Track() ], Pointer [ SDL3::SDL_AudioSpec() ], Pointer [Float], Int ] => Void ];
+        _affix_and_export MIX_SetTrackRawCallback    => [ Pointer [ MIX_Track() ], MIX_TrackMixCallback(), Pointer [Void] ], Bool;
+        _affix_and_export MIX_SetTrackCookedCallback => [ Pointer [ MIX_Track() ], MIX_TrackMixCallback(), Pointer [Void] ], Bool;
+        _typedef_and_export MIX_GroupMixCallback =>
+            Callback [ [ Pointer [Void], Pointer [ MIX_Group() ], Pointer [ SDL3::SDL_AudioSpec() ], Pointer [Float], Int ] => Void ];
+        _affix_and_export MIX_SetGroupPostMixCallback => [ Pointer [ MIX_Group() ], MIX_GroupMixCallback(), Pointer [Void] ], Bool;
+        _typedef_and_export MIX_PostMixCallback =>
+            Callback [ [ Pointer [Void], Pointer [ MIX_Mixer() ], Pointer [ SDL3::SDL_AudioSpec() ], Pointer [Float], Int ] => Void ];
+        _affix_and_export MIX_SetPostMixCallback => [ Pointer [ MIX_Mixer() ], MIX_PostMixCallback(), Pointer [Void] ], Bool;
+        _affix_and_export MIX_Generate           => [ Pointer [ MIX_Mixer() ], Pointer [Void], Int ], Int;
+        _affix_and_export MIX_CreateAudioDecoder => [ String, SDL3::SDL_PropertiesID() ], Pointer [ MIX_AudioDecoder() ];
+        _affix_and_export
+            MIX_CreateAudioDecoder_IO => [ Pointer [ SDL3::SDL_IOStream() ], Bool, SDL3::SDL_PropertiesID() ],
+            Pointer [ MIX_AudioDecoder() ];
+        _affix_and_export MIX_DestroyAudioDecoder       => [ Pointer [ MIX_AudioDecoder() ] ], Void;
+        _affix_and_export MIX_GetAudioDecoderProperties => [ Pointer [ MIX_AudioDecoder() ] ], SDL3::SDL_PropertiesID();
+        _affix_and_export MIX_GetAudioDecoderFormat     => [ Pointer [ MIX_AudioDecoder() ], Pointer [ SDL3::SDL_AudioSpec() ] ], Bool;
+        _affix_and_export MIX_DecodeAudio => [ Pointer [ MIX_AudioDecoder() ], Pointer [Void], Int, Pointer [ SDL3::SDL_AudioSpec() ] ], Int;
+    }
+
+    sub _all () {
+        state $done++ && return;
+        _mixer();
+    }
 }
 1;
 
