@@ -213,9 +213,9 @@ All functions and constants provided by SDL3_mixer.
         _affix_and_export MIX_GetNumAudioDecoders => [], Int;
         _affix_and_export MIX_GetAudioDecoder     => [Int], String;
         _affix_and_export MIX_CreateMixerDevice   => [ UInt32, Pointer [Void] ], Pointer [ MIX_Mixer() ];
-        _affix_and_export MIX_CreateMixer         => [ Pointer [Void] ], Pointer [ MIX_Mixer() ];
-        _affix_and_export MIX_DestroyMixer        => [ Pointer [ MIX_Mixer() ] ], Void;
-        _affix_and_export MIX_GetMixerProperties  => [ Pointer [ MIX_Mixer() ] ], SDL3::SDL_PropertiesID();
+        _affix_and_export MIX_CreateMixer         => [ Pointer [ SDL3::SDL_AudioSpec() ] ], Pointer [ MIX_Mixer() ];
+        _affix_and_export MIX_DestroyMixer        => [ Pointer [ MIX_Mixer() ] ],           Void;
+        _affix_and_export MIX_GetMixerProperties  => [ Pointer [ MIX_Mixer() ] ],           SDL3::SDL_PropertiesID();
         _const_and_export MIX_PROP_MIXER_DEVICE_NUMBER => 'SDL_mixer.mixer.device';
         _affix_and_export MIX_GetMixerFormat  => [ Pointer [ MIX_Mixer() ], Pointer [ SDL3::SDL_AudioSpec() ] ], Bool;
         _affix_and_export MIX_LockMixer       => [ Pointer [ MIX_Mixer() ] ], Void;
