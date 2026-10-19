@@ -227,7 +227,7 @@ you will have access to with this import tag.
         _affix_and_export
             MIX_LoadRawAudioNoCopy => [ Pointer [ MIX_Mixer() ], Pointer [Void], Size_t, Pointer [ SDL3::SDL_AudioSpec() ], Bool ],
             Pointer [ MIX_Audio() ];
-        _affix_and_export MIX_CreateSineWaveAudio => [ Pointer [ SDL3::SDL_AudioSpec() ], Int, Float, SInt64 ], Pointer [ MIX_Audio() ];
+        _affix_and_export MIX_CreateSineWaveAudio => [ Pointer [ MIX_Audio() ], Int, Float, SInt64 ], Pointer [ MIX_Audio() ];
         _affix_and_export MIX_GetAudioProperties => [ Pointer [ MIX_Audio() ] ], SDL3::SDL_PropertiesID();
         _const_and_export MIX_PROP_METADATA_TITLE_STRING              => 'SDL_mixer.metadata.title';
         _const_and_export MIX_PROP_METADATA_ARTIST_STRING             => 'SDL_mixer.metadata.artist';
