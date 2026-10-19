@@ -6,6 +6,60 @@ package SDL3::TTF v0.0.1 {
     use SDL3   qw[:all];
     use Carp   qw[croak confess];
     use Config qw[%Config];
+
+=encoding utf-8
+
+=head1 NAME
+
+SDL3::TTF - TrueType Font support for SDL3
+
+=head1 SYNOPSIS
+
+    use v5.40;
+    use SDL3      qw[:all :main];
+    use SDL3::TTF qw[:all];
+
+    TTF_Init() or die SDL_GetError();
+
+    my $font = TTF_OpenFont( 'C:/Windows/Fonts/arial.ttf', 48.0 )
+        or die SDL_GetError();
+
+    my $surface =
+        TTF_RenderText_Blended( $font, 'Hello, World!', 0, { r => 255, g => 255, b => 255, a => 255 } );
+    my $texture = SDL_CreateTextureFromSurface( $renderer, $surface );
+
+    TTF_CloseFont($font);
+    TTF_Quit();
+
+=head1 DESCRIPTION
+
+C<SDL3::TTF> binds SDL_ttf, a companion library to SDL for working with TrueType (tm) fonts.
+
+The library is a wrapper around the FreeType and HarfBuzz libraries, allowing you to use TrueType fonts to render text
+in SDL applications. Text can be rendered to a surface or directly to a texture, with control over the font size,
+style, hinting, and color. Complex scripts are shaped with HarfBuzz, fallback fonts extend the glyphs a font can draw,
+and outlines can be stroked with an arbitrary width.
+
+Open a font with C<TTF_OpenFont( ... )> or C<TTF_OpenFontWithProperties( ... )>, then render with the
+C<TTF_RenderText_*( ... )> and C<TTF_RenderGlyph_*( ... )> families. For styled, wrapped, and measured text, build a
+reusable C<TTF_Text> object against a C<TTF_TextEngine> and draw it into the renderer. Free fonts with C<TTF_CloseFont(
+... )> and call C<TTF_Quit( )> when you are done.
+
+There are a few examples in this distribution's C<eg/ttf> directory.
+
+=head2 Features
+
+Each feature listed below is a tag you may use.
+
+=head3 C<:all> - SDL3_ttf Functions
+
+This binds all functions, defines all types, and imports them into your package.
+
+See L<the SDL3_ttf Wiki|https://wiki.libsdl.org/SDL3_ttf/FrontPage> for documentation of the functions and types you
+will have access to with this import tag.
+
+=cut
+
     my $alien = Alien::SDL3->new;
     my $info  = $alien->alt('libsdl3_ttf')->package_info;
     croak 'SDL3_ttf is not installed' unless $info;
@@ -64,16 +118,10 @@ package SDL3::TTF v0.0.1 {
         }
     }
 
-=head3 C<:all> - SDL3_ttf Functions
-
-All functions and constants provided by SDL3_ttf.
-
-=cut
-
     sub _ttf () {
         state $done++ && return;
 
-        # Runtime version discovery (matches SDL3.pm)
+        # Runtime version discovery
         _affix_and_export 'TTF_Version', [], Int;
         _func_and_export TTF_VERSIONNUM       => sub ( $major, $minor, $patch ) { ( ($major) * 1000000 + ($minor) * 1000 + ($patch) ) };
         _func_and_export TTF_VERSIONNUM_MAJOR => sub ($version) { int( ($version) / 1000000 ) };
@@ -301,7 +349,7 @@ All functions and constants provided by SDL3_ttf.
                 indices       => Pointer [UShort],
                 num_indices   => Int,
                 image_type    => TTF_ImageType(),
-                next          => Pointer ['TTF_GLAtlasDrawSequence']
+                next          => Pointer [ TTF_GLAtlasDrawSequence() ]
             ];
             _affix_and_export TTF_GetGLTextDrawData   => [ Pointer [ TTF_Text() ] ],       Pointer [ TTF_GLAtlasDrawSequence() ];
             _affix_and_export TTF_DestroyGLTextEngine => [ Pointer [ TTF_TextEngine() ] ], Void;
@@ -355,3 +403,34 @@ All functions and constants provided by SDL3_ttf.
     }
 }
 1;
+
+=head1 See Also
+
+The project's repo: L<https://github.com/Perl-SDL3/>
+
+The SDL3_ttf Wiki: L<https://wiki.libsdl.org/SDL3_ttf/FrontPage>
+
+L<SDL3>
+
+L<Affix>
+
+=head1 LICENSE
+
+This software is Copyright (c) 2026 by Sanko Robinson.
+
+This is free software, licensed under:
+
+  The Artistic License 2.0 (GPL Compatible)
+
+See the F<LICENSE> file for full text.
+
+=head1 AUTHOR
+
+Sanko Robinson L<https://github.com/sanko>
+
+=begin stopwords
+
+
+=end stopwords
+
+=cut

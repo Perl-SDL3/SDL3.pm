@@ -3,7 +3,7 @@ package SDL3::Mixer v0.0.6 {
     use base 'Exporter';
     use Affix qw[:all];
     use Alien::SDL3;
-    use SDL3;    # Needs core types...
+    use SDL3   qw[:all];            # Needs core types...
     use Carp   qw[confess croak];
     use Config qw[%Config];
 
@@ -49,7 +49,7 @@ SDL3::Mixer - Audio File support for SDL3
 
 =head1 DESCRIPTION
 
-C<SDL2::Mixer> is a library to make complicated audio processing tasks easier.
+C<SDL3::Mixer> is a library to make complicated audio processing tasks easier.
 
 It offers audio file decoding, mixing multiple sounds together, basic 3D positional audio, and various audio effects.
 
@@ -117,6 +117,17 @@ consider a proper 3D library like OpenAL.
 
 There are a few examples in this distribution's C<eg/mixer> directory.
 
+=head2 Features
+
+Each feature listed below is a tag you may use.
+
+=head3 C<:all> - SDL3_mixer Audio Functions
+
+This binds all functions, defines all types, and imports them into your package.
+
+See L<the SDL3_mixer Wiki|https://wiki.libsdl.org/SDL3_mixer/FrontPage> for documentation of the functions and types
+you will have access to with this import tag.
+
 =cut
 
     my $alien = Alien::SDL3->new;
@@ -165,31 +176,6 @@ There are a few examples in this distribution's C<eg/mixer> directory.
         }
         push @{ $EXPORT_TAGS{ [ caller(1) ]->[3] =~ s/^.+?_//r } }, $name;
     }
-
-=head2 Constants
-
-=head3 C<SDL_MIXER_MAJOR_VERSION>
-
-The current major version of SDL_mixer headers.
-
-If this were SDL_mixer version 3.2.1, this value would be 3.
-
-=head3 C<>
-=head3 C<>
-=head3 C<>
-=head3 C<>
-
-=head2 Functions
-
-Each function listed below is imported with the C<:all> tag or by name.
-
-=cut
-
-=head3 C<:mixer> - SDL3_mixer Audio Functions
-
-All functions and constants provided by SDL3_mixer.
-
-=cut
 
     sub _mixer () {
         state $done++ && return;
@@ -242,15 +228,15 @@ All functions and constants provided by SDL3_mixer.
             Pointer [ MIX_Audio() ];
         _affix_and_export MIX_CreateSineWaveAudio => [ Pointer [ SDL3::SDL_AudioSpec() ], Int, Float, SInt64 ], Pointer [ MIX_Audio() ];
         _affix_and_export MIX_GetAudioProperties => [ Pointer [ MIX_Audio() ] ], SDL3::SDL_PropertiesID();
-        _const_and_export MIX_PROP_METADATA_TITLE_STRING              => "SDL_mixer.metadata.title";
-        _const_and_export MIX_PROP_METADATA_ARTIST_STRING             => "SDL_mixer.metadata.artist";
-        _const_and_export MIX_PROP_METADATA_ALBUM_STRING              => "SDL_mixer.metadata.album";
-        _const_and_export MIX_PROP_METADATA_COPYRIGHT_STRING          => "SDL_mixer.metadata.copyright";
-        _const_and_export MIX_PROP_METADATA_TRACK_NUMBER              => "SDL_mixer.metadata.track";
-        _const_and_export MIX_PROP_METADATA_TOTAL_TRACKS_NUMBER       => "SDL_mixer.metadata.total_tracks";
-        _const_and_export MIX_PROP_METADATA_YEAR_NUMBER               => "SDL_mixer.metadata.year";
-        _const_and_export MIX_PROP_METADATA_DURATION_FRAMES_NUMBER    => "SDL_mixer.metadata.duration_frames";
-        _const_and_export MIX_PROP_METADATA_DURATION_INFINITE_BOOLEAN => "SDL_mixer.metadata.duration_infinite";
+        _const_and_export MIX_PROP_METADATA_TITLE_STRING              => 'SDL_mixer.metadata.title';
+        _const_and_export MIX_PROP_METADATA_ARTIST_STRING             => 'SDL_mixer.metadata.artist';
+        _const_and_export MIX_PROP_METADATA_ALBUM_STRING              => 'SDL_mixer.metadata.album';
+        _const_and_export MIX_PROP_METADATA_COPYRIGHT_STRING          => 'SDL_mixer.metadata.copyright';
+        _const_and_export MIX_PROP_METADATA_TRACK_NUMBER              => 'SDL_mixer.metadata.track';
+        _const_and_export MIX_PROP_METADATA_TOTAL_TRACKS_NUMBER       => 'SDL_mixer.metadata.total_tracks';
+        _const_and_export MIX_PROP_METADATA_YEAR_NUMBER               => 'SDL_mixer.metadata.year';
+        _const_and_export MIX_PROP_METADATA_DURATION_FRAMES_NUMBER    => 'SDL_mixer.metadata.duration_frames';
+        _const_and_export MIX_PROP_METADATA_DURATION_INFINITE_BOOLEAN => 'SDL_mixer.metadata.duration_infinite';
         _affix_and_export MIX_GetAudioDuration => [ Pointer [ MIX_Audio() ] ], SInt64;
         _const_and_export MIX_DURATION_UNKNOWN  => -1;
         _const_and_export MIX_DURATION_INFINITE => -2;
@@ -285,20 +271,20 @@ All functions and constants provided by SDL3_mixer.
         _affix_and_export MIX_MSToFrames               => [ Int, SInt64 ], SInt64;
         _affix_and_export MIX_FramesToMS               => [ Int, SInt64 ], SInt64;
         _affix_and_export MIX_PlayTrack                => [ Pointer [ MIX_Track() ], SDL3::SDL_PropertiesID() ], Bool;
-        _const_and_export MIX_PROP_PLAY_LOOPS_NUMBER                       => "SDL_mixer.play.loops";
-        _const_and_export MIX_PROP_PLAY_MAX_FRAME_NUMBER                   => "SDL_mixer.play.max_frame";
-        _const_and_export MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER            => "SDL_mixer.play.max_milliseconds";
-        _const_and_export MIX_PROP_PLAY_START_FRAME_NUMBER                 => "SDL_mixer.play.start_frame";
-        _const_and_export MIX_PROP_PLAY_START_MILLISECOND_NUMBER           => "SDL_mixer.play.start_millisecond";
-        _const_and_export MIX_PROP_PLAY_START_ORDER_NUMBER                 => "SDL_mixer.play.start_order";
-        _const_and_export MIX_PROP_PLAY_LOOP_START_FRAME_NUMBER            => "SDL_mixer.play.loop_start_frame";
-        _const_and_export MIX_PROP_PLAY_LOOP_START_MILLISECOND_NUMBER      => "SDL_mixer.play.loop_start_millisecond";
-        _const_and_export MIX_PROP_PLAY_FADE_IN_FRAMES_NUMBER              => "SDL_mixer.play.fade_in_frames";
-        _const_and_export MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER        => "SDL_mixer.play.fade_in_milliseconds";
-        _const_and_export MIX_PROP_PLAY_FADE_IN_START_GAIN_FLOAT           => "SDL_mixer.play.fade_in_start_gain";
-        _const_and_export MIX_PROP_PLAY_APPEND_SILENCE_FRAMES_NUMBER       => "SDL_mixer.play.append_silence_frames";
-        _const_and_export MIX_PROP_PLAY_APPEND_SILENCE_MILLISECONDS_NUMBER => "SDL_mixer.play.append_silence_milliseconds";
-        _const_and_export MIX_PROP_PLAY_HALT_WHEN_EXHAUSTED_BOOLEAN        => "SDL_mixer.play.halt_when_exhausted";
+        _const_and_export MIX_PROP_PLAY_LOOPS_NUMBER                       => 'SDL_mixer.play.loops';
+        _const_and_export MIX_PROP_PLAY_MAX_FRAME_NUMBER                   => 'SDL_mixer.play.max_frame';
+        _const_and_export MIX_PROP_PLAY_MAX_MILLISECONDS_NUMBER            => 'SDL_mixer.play.max_milliseconds';
+        _const_and_export MIX_PROP_PLAY_START_FRAME_NUMBER                 => 'SDL_mixer.play.start_frame';
+        _const_and_export MIX_PROP_PLAY_START_MILLISECOND_NUMBER           => 'SDL_mixer.play.start_millisecond';
+        _const_and_export MIX_PROP_PLAY_START_ORDER_NUMBER                 => 'SDL_mixer.play.start_order';
+        _const_and_export MIX_PROP_PLAY_LOOP_START_FRAME_NUMBER            => 'SDL_mixer.play.loop_start_frame';
+        _const_and_export MIX_PROP_PLAY_LOOP_START_MILLISECOND_NUMBER      => 'SDL_mixer.play.loop_start_millisecond';
+        _const_and_export MIX_PROP_PLAY_FADE_IN_FRAMES_NUMBER              => 'SDL_mixer.play.fade_in_frames';
+        _const_and_export MIX_PROP_PLAY_FADE_IN_MILLISECONDS_NUMBER        => 'SDL_mixer.play.fade_in_milliseconds';
+        _const_and_export MIX_PROP_PLAY_FADE_IN_START_GAIN_FLOAT           => 'SDL_mixer.play.fade_in_start_gain';
+        _const_and_export MIX_PROP_PLAY_APPEND_SILENCE_FRAMES_NUMBER       => 'SDL_mixer.play.append_silence_frames';
+        _const_and_export MIX_PROP_PLAY_APPEND_SILENCE_MILLISECONDS_NUMBER => 'SDL_mixer.play.append_silence_milliseconds';
+        _const_and_export MIX_PROP_PLAY_HALT_WHEN_EXHAUSTED_BOOLEAN        => 'SDL_mixer.play.halt_when_exhausted';
         _affix_and_export MIX_PlayTag                  => [ Pointer [ MIX_Mixer() ], String, SDL3::SDL_PropertiesID() ], Bool;
         _affix_and_export MIX_PlayAudio                => [ Pointer [ MIX_Mixer() ], Pointer [ MIX_Audio() ] ], Bool;
         _affix_and_export MIX_StopTrack                => [ Pointer [ MIX_Track() ], SInt64 ], Bool;
@@ -366,13 +352,15 @@ All functions and constants provided by SDL3_mixer.
 
 The project's repo: L<https://github.com/Perl-SDL3/>
 
-The SDL3 Wiki: L<https://wiki.libsdl.org/SDL3/FrontPage>
+The SDL3_mixer Wiki: L<https://wiki.libsdl.org/SDL3_mixer/FrontPage>
+
+L<SDL3>
 
 L<Affix>
 
 =head1 LICENSE
 
-This software is Copyright (c) 2025 by Sanko Robinson.
+This software is Copyright (c) 2026 by Sanko Robinson.
 
 This is free software, licensed under:
 
