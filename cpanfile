@@ -1,5 +1,5 @@
-requires 'Affix',       'v1.2.7';
-requires 'Alien::SDL3', 'v3.4.21';
+requires 'Affix', 'v1.2.7';
+requires 'Alien::SDL3';
 requires 'Carp';
 requires 'Data::Dump';
 requires 'perl', 'v5.40.0';
@@ -19,8 +19,8 @@ on configure => sub {
     requires 'Path::Tiny', '0.144';
 };
 on build => sub {
-    requires 'Affix',       'v1.2.7';
-    requires 'Alien::SDL3', 'v3.4.21';
+    requires 'Affix', 'v1.2.7';
+    requires 'Alien::SDL3';
 };
 on test => sub {
     requires 'IPC::Cmd';
