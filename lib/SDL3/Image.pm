@@ -27,7 +27,7 @@ SDL3::Image - Image Loading support for SDL3
 
 =head1 DESCRIPTION
 
-C<SDL3::Image> binds SDL_image, a simple library to load images of various formats as SDL surfaces.
+C<SDL3::Image> binds a simple library to load images of various formats as SDL surfaces.
 
 It can load C<BMP>, C<GIF>, C<JPEG>, C<LBM>, C<PCX>, C<PNG>, C<PNM> (PPM/PGM/PBM), C<QOI>, C<TGA>, C<XCF>, C<XPM>, and
 simple C<SVG> format images. It can also load C<AVIF>, C<JPEG-XL>, C<TIFF>, and C<WebP> images, depending on how the
