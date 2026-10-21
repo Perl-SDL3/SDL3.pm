@@ -5,6 +5,12 @@ All notable changes to SDL.pm will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Document prerequisites based on what I needed to do for the CI.
+
 ## [v0.0.6] - 2026-10-20
 
 Finally getting around to SDL3::Mixer, SDL3::Image, and SDL3::TTF.
