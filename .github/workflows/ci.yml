@@ -30,7 +30,6 @@ jobs:
         command -v cpanm
         export XMAKE_ROOT=y
         cpanm --notest IO::Socket::SSL
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
   freebsd:
     name: FreeBSD
@@ -63,7 +62,6 @@ jobs:
         command -v cpanm
         export XMAKE_ROOT=y
         cpanm --notest IO::Socket::SSL
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
   linux:
     name: Linux
@@ -103,7 +101,6 @@ jobs:
         #~ is a hard fail point that catches any no-op.
         curl -L https://cpanmin.us | perl - App::cpanminus
         command -v cpanm
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
   macos:
     name: macOS
@@ -124,7 +121,6 @@ jobs:
         #~ is a hard fail point that catches any no-op.
         curl -L https://cpanmin.us | perl - App::cpanminus
         command -v cpanm
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
   netbsd:
     name: NetBSD
@@ -182,7 +178,6 @@ jobs:
         command -v cpanm
         export XMAKE_ROOT=y
         cpanm --notest IO::Socket::SSL
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
   results:
     if: always()
@@ -301,7 +296,6 @@ jobs:
         #~ compiles from source here -- vcpkg's SDL3 is older than the recipe's
         #~ 3.4.18 gate and the extension recipes follow that verdict and the
         #~ snapshot written under blib is what the audit below reads.
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
         #~ Audit: the whole family must resolve, whether that came from the
         #~ package manager above or from the local build. This is also the only
@@ -338,7 +332,6 @@ jobs:
           cp -r /c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/templates/* "$XGL/templates/" 2>/dev/null || true
           chmod -R u+w "$XGL/templates" || true
         fi
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
   windows-nocc:
     name: 'Windows (prebuilt, Perl only)'
@@ -365,7 +358,6 @@ jobs:
           cp -r /c/Strawberry/perl/lib/auto/share/dist/Alien-Xmake/templates/* "$XGL/templates/" 2>/dev/null || true
           chmod -R u+w "$XGL/templates" || true
         fi
-        cpanm -v https://github.com/Perl-SDL3/Alien-SDL3.pm.git@dev
         cpanm -v --with-recommends .
         #~ Every package must resolve -- through the prebuilt archives, never a
         #~ from-source build. Print what won so a silent regression is visible in
