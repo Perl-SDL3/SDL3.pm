@@ -1,4 +1,4 @@
-package SDL3 v0.0.6 {
+package SDL3 v0.0.7 {
     use v5.40;
     use base 'Exporter';
     use Affix qw[:all];
@@ -258,7 +258,7 @@ See L<SDL3: CategoryAsyncIO|https://wiki.libsdl.org/SDL3/CategoryAsyncIO>
 Atomic operations.
 
 IMPORTANT: If you are not an expert in concurrent lockless programming, you should not be using any functions in this
-file. You should be protecting your data structures with full mutexes instead.
+section. You should be protecting your data structures with full mutexes instead.
 
 See L<SDL3: CategoryAtomic|https://wiki.libsdl.org/SDL3/CategoryAtomic>
 
@@ -5981,8 +5981,8 @@ See L<SDL3: CategoryVulkan|https://wiki.libsdl.org/SDL3/CategoryVulkan>
 
 =head1 Prerequisites
 
-SDL3.pm requires Perl v5.40.0+ and will attempt to locate existing system libraries (SDL3 >= 3.4.18) or download
-official release archives/build from source.
+SDL3.pm requires Perl v5.40.0+ and will attempt to locate existing system libraries or download official release
+archives/build from source.
 
 To avoid compiling entire windowing and dependency stacks from scratch, ensure your system meets the following
 platform-specific prerequisites:

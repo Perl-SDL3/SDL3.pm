@@ -70,7 +70,7 @@ See [SDL3: CategoryAsyncIO](https://wiki.libsdl.org/SDL3/CategoryAsyncIO)
 Atomic operations.
 
 IMPORTANT: If you are not an expert in concurrent lockless programming, you should not be using any functions in this
-file. You should be protecting your data structures with full mutexes instead.
+section. You should be protecting your data structures with full mutexes instead.
 
 See [SDL3: CategoryAtomic](https://wiki.libsdl.org/SDL3/CategoryAtomic)
 
@@ -479,9 +479,11 @@ See [SDL3: CategoryVulkan](https://wiki.libsdl.org/SDL3/CategoryVulkan)
 
 # Prerequisites
 
-SDL3.pm requires Perl v5.40.0+ and will attempt to locate existing system libraries (SDL3 >= 3.4.18) or download official release archives/build from source.
+SDL3.pm requires Perl v5.40.0+ and will attempt to locate existing system libraries or download official release
+archives/build from source.
 
-To avoid compiling entire windowing and dependency stacks from scratch, ensure your system meets the following platform-specific prerequisites:
+To avoid compiling entire windowing and dependency stacks from scratch, ensure your system meets the following
+platform-specific prerequisites:
 
 ## Linux (Ubuntu / Debian)
 
@@ -522,7 +524,8 @@ brew install freetype libpng libtiff webp jpeg-turbo libogg libvorbis flac opus 
 
 ## Windows
 
-Strawberry Perl provides everything needed out-of-the-box. Alien::SDL3 will download official prebuilt SDL3 MinGW binaries matching your Perl architecture.
+Strawberry Perl provides everything needed out-of-the-box. Alien::SDL3 will download official prebuilt SDL3 MinGW
+binaries matching your Perl architecture.
 
 If using vcpkg instead:
 
@@ -556,7 +559,8 @@ export PKG_PATH="https://ftp.netbsd.org/pub/pkgsrc/packages/NetBSD/$(uname -m)/1
 pkg_add -U perl gmake git-base cmake ninja-build unzip pkgconf m4 curl
 ```
 
-If base X11 is not installed, unpack the `xbase.tar.xz` and `xcomp.tar.xz` sets into `/usr/X11R7`, alias `xscrnsaver.pc` to `xss.pc`, and export:
+If base X11 is not installed, unpack the `xbase.tar.xz` and `xcomp.tar.xz` sets into `/usr/X11R7`, alias
+`xscrnsaver.pc` to `xss.pc`, and export:
 
 ```
 export PATH="/usr/pkg/bin:/usr/pkg/sbin:$PATH"
