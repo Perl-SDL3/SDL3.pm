@@ -46,7 +46,7 @@
       "build" : {
          "requires" : {
             "Affix" : "v1.2.7",
-            "Alien::SDL3" : "v3.4.21"
+            "Alien::SDL3" : "v3.4.22"
          }
       },
       "configure" : {
@@ -93,7 +93,7 @@
       "runtime" : {
          "requires" : {
             "Affix" : "v1.2.7",
-            "Alien::SDL3" : "v3.4.21",
+            "Alien::SDL3" : "v3.4.22",
             "Carp" : "0",
             "Data::Dump" : "0",
             "perl" : "v5.40.0"
@@ -128,7 +128,7 @@
          "version" : "v0.0.6"
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/Perl-SDL3/SDL3.pm/issues"
